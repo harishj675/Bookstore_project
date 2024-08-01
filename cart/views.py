@@ -1,7 +1,7 @@
 from bookstore.models import Book
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, reverse
@@ -135,12 +135,11 @@ def create_order(request):
         order_item.save()
         item.delete()
     print('order created successfully...')
-    return HttpResponse('<h1>Order created successfully....</h1>')
+    return HttpResponseRedirect('users:profile')
 
 
 def view_orders(request):
     orders_list = Order.objects.all()
-    print('order list method called....')
     return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
 
 

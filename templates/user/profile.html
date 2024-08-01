@@ -2,5 +2,40 @@
 {% block content%}
 <div id="profile">
     <h1>Profile Page</h1>
+
+    <div id="user_info">
+        <p>{{request.user.first_name}} {{request.user.last_name}}</p>
+        <p>{{request.user.email}}</p>
+        <p>{{user_profile.mobile_number}}</p>
+        <p>{{user_profile.address}}</p>
+        <p>{{user_profile.pincode}}</p>
+        <a href="">update User</a>
+    </div>
+
+    <div id="users_order">
+        <ul>
+            {% for order in order_list %}
+            <li>
+                <p>{{order.id}}</p>
+                <ul>
+                    {%for item in order.items %}
+                    <li>
+                        <img src="{{ item.cover_img.url }}" alt="Book Cover">
+                        <p>{{item.book_title}}</p>
+                        <p>{{item.book_author}}</p>
+                        <p>{{item.book_price}}</p>
+                        <p>{{item.book_discount}}
+                        <p>{{item.discounted_price}}</p>
+                        <p>{{item.item_quantity}}</p>
+                        <p>{{item.total_price}}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <p>{{order.status}}</p>
+                <p>{{order.order_total_amount}}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}
