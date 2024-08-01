@@ -1,0 +1,27 @@
+<header>
+    <div id="logo">
+        <a href="{% url 'book:home' %}"> <span>Bookstore</span></a>
+    </div>
+    <form method="get" action="{% url 'book:search_book' %}">
+        <div id="search-div">
+            <input type="text" id="search" name="query" value="" placeholder="Search book">
+        </div>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="header-buttons">
+        {% if user.is_authenticated %}
+        <a href="{% url 'users:profile' user.id %}" class="button profile-icon"><i class="fas fa-user"></i>{{user}}</a>
+        <a href="{% url 'cart:cart' %}" class="button cart-icon">
+            <i class="fas fa-shopping-cart"></i> My Cart
+            {% if cart_count > 0 %}
+            <span class="cart-count">{{cart_count}}</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'users:logout'%}" class="button logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+        <a href="{% url 'users:login'%}" class="button login-icon"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="{% url 'users:create_user' %}" class="button signup-icon"><i class="fas fa-user-plus"></i> Sign Up</a>
+        {% endif %}
+    </div>
+</header>

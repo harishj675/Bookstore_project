@@ -1,0 +1,20 @@
+{% extends 'staff/staff.html' %}
+
+{% block content %}
+<div id="stock view">
+    <h1>stock report</h1>
+    <ul>
+        {% for book in book_list %}
+        <li>
+            <p>{{book.id}}</p>
+            <p>{{book.title}}</p>
+            <p>{{book.price}}</p>
+            <p>{{book.stock_quantity}}</p>
+            <P>{{book.remaining_quantity}}</P>
+            <p>{{book.updated_at}}</p>
+            <a href="">Add Stock</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'staff/staff.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div>
+    <form method="post" action="{% url 'book:add_book_more_info' book_id%}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Add Book</button>
+    </form>
+
+</div>
+
+{% endblock %}

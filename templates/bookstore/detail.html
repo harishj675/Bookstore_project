@@ -1,0 +1,161 @@
+{% extends 'Layouts/base.html' %}
+
+{% block content %}
+{% if book %}
+<div id="book-detail-container">
+    <div class="book-img">
+        <img src="{{book.cover_img.url}}"
+             alt="Book Cover">
+    </div>
+    <div id="book-info">
+        {% if book_specifications.book_tag != "normal" %}
+        <div class="book-tag">{{book_specifications.book_tag}}</div>
+        {% endif %}
+        <p class="book-title-main">{{book.title}}</p>
+        <p class="book-author-main">{{book.author}}</p>
+        <div class="book-rating-main">
+            <span class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+            </span>
+            <span class="rating-number">(150 reviews)</span>
+        </div>
+        <p class="book-price">₹{{book.price}}</p>
+        <div class="qty-controls">
+            <button class="qty-btn" id="decrease-qty"><i class="fas fa-minus"></i></button>
+            <span id="qty">1</span>
+            <button class="qty-btn" id="increase-qty"><i class="fas fa-plus"></i></button>
+        </div>
+        <button class="add-to-cart">
+            <i class="fas fa-shopping-cart"></i> Add to cart
+        </button>
+    </div>
+</div>
+{% endif %}
+{% include 'bookstore/smilier_books.html'%}
+<div class="product-container">
+    <div class="product-detail-box">
+        <div class="product-specifications">
+            <div class="specifications-title">Product Specifications</div>
+            <div class="specifications-content">
+                <div class="description-box">
+                    <div class="description-title">Book Description</div>
+                    {% if book_specifications.book_description %}
+                    <div class="description-text">{{book_specifications.book_description}}</div>
+                    {% else %}
+                    <div class="description-text">(No description available for this product.)</div>
+                    {% endif %}
+                </div>
+                <div class="specifications-highlights">
+                    <div class="specifications-title">Book Specifications</div>
+                    <ul class="specifications-list">
+                        <li><span class="spec-title">ISBN-13</span><span class="spec-value">{{book_specifications.book_ISBN_13}}</span>
+                        </li>
+                        <li><span class="spec-title">Language</span><span class="spec-value">{{book_specifications.book_language}}</span>
+                        </li>
+                        <li><span class="spec-title">Binding</span><span class="spec-value">{{book_specifications.book_binding}}</span>
+                        </li>
+                        <li><span class="spec-title">Publisher</span><span class="spec-value">{{book_specifications.book_publisher}}</span>
+                        </li>
+                        <li><span class="spec-title">Publishing Date</span><span class="spec-value">{{book_specifications.book_publishing_date}}</span>
+                        </li>
+                        <li><span class="spec-title">Total Pages</span><span class="spec-value">{{book_specifications.book_total_pages}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="reviews-and-specs">
+        <div class="reviews-container">
+            <div class="reviews-title">Reviews & Ratings</div>
+            <div class="review-rating">
+                <div class="rating">
+                    <div class="rating-star">
+                        ★★★★☆
+                    </div>
+                    <div class="rating-text">4 out of 5 stars</div>
+                </div>
+                <div class="rating-progress">
+                    <div class="rating-progress-bar">
+                        <div class="progress-fill" style="width: 33.91%;"></div>
+                        <div class="progress-label">78</div>
+                    </div>
+                    <div class="rating-progress-bar">
+                        <div class="progress-fill" style="width: 32.61%;"></div>
+                        <div class="progress-label">75</div>
+                    </div>
+                    <div class="rating-progress-bar">
+                        <div class="progress-fill" style="width: 33.48%;"></div>
+                        <div class="progress-label">77</div>
+                    </div>
+                    <div class="rating-progress-bar">
+                        <div class="progress-fill zero" style="width: 0%;"></div>
+                        <div class="progress-label">0</div>
+                    </div>
+                    <div class="rating-progress-bar">
+                        <div class="progress-fill zero" style="width: 0%;"></div>
+                        <div class="progress-label">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="write-review-button">
+                <button><i class="fas fa-pencil-alt"></i> Write your review</button>
+            </div>
+        </div>
+        <div class="reviews-iframe">
+            <iframe src="https://www.goodreads.com/api/reviews_widget_iframe?did=DEVELOPER_ID&amp;format=html&amp;header_text=Reviews+on+GoodReads&amp;isbn=9789394852198&amp;links=660&amp;min_rating=3&amp;num_reviews=5&amp;review_back=ffffff&amp;stars=000000&amp;stylesheet=https://filehost.sapnaonline.com/v2/static/css/goodreads.css?q=9"
+                    width="100%" height="450" frameborder="0"></iframe>
+        </div>
+    </div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const decreaseBtn = document.getElementById('decrease-qty');
+        const increaseBtn = document.getElementById('increase-qty');
+        const qtySpan = document.getElementById('qty');
+        const addToCartBtn = document.querySelector('.add-to-cart');
+        const bookId = "{{ book.id }}";
+
+        let quantity = 1;
+
+        function updateQuantity(newQty) {
+            if (newQty < 1) newQty = 1;
+            quantity = newQty;
+            qtySpan.textContent = quantity;
+        }
+
+        decreaseBtn.addEventListener('click', function() {
+            updateQuantity(quantity - 1);
+        });
+
+        increaseBtn.addEventListener('click', function() {
+            updateQuantity(quantity + 1);
+        });
+
+        addToCartBtn.addEventListener('click', function() {
+            const url = `{% url 'cart:add_to_cart' book.id %}?quantity=${quantity}`;
+
+            fetch(url, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Added to cart successfully!');
+                } else {
+                    alert('Error adding to cart.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

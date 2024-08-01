@@ -1,0 +1,324 @@
+/* Book Detail Container */
+#book-detail-container {
+    display: flex;
+    align-items: flex-start;
+    margin: 2rem auto;
+    max-width: 1200px; 
+    padding: 3rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; 
+}
+
+.book-img {
+    flex: 1;
+    max-width: 300px; 
+    margin-right: 1.5rem; 
+}
+
+.book-img img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+#book-info {
+    flex: 2;
+    position: relative; 
+}
+
+.book-tag {
+    position: absolute;
+    top: 1rem;
+    left: -373px;
+    top:-48px;
+    background: #f39c12; 
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.book-title-main {
+    display: block;
+    font-size: 1.9rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.book-author-main {
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+.book-rating-main {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rating-stars {
+    color: #f39c12; /* Gold color for stars */
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.rating-number {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.book-price {
+    font-size: 1.2rem;
+    color: #007bff; /* Price color */
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.qty-btn {
+    background: #ddd;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #333;
+    margin: 0 0.5rem;
+    transition: background 0.3s;
+}
+
+.qty-btn:hover {
+    background: #ccc;
+}
+
+#qty {
+    font-size: 1rem;
+    margin: 0 1rem;
+}
+
+.add-to-cart {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.add-to-cart i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem; /* Adjust size as needed */
+}
+
+.add-to-cart:hover {
+    background: #0056b3;
+}
+.reviews-and-specs {
+    display: flex;
+    gap: 2rem;
+}
+/* Product Container */
+.product-container {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem auto;
+    max-width: 1200px;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Detail Box */
+.product-detail-box {
+    margin-bottom: 2rem;
+}
+
+.product-specifications {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f9f9f9;
+}
+
+.specifications-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.specifications-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.description-box {
+    margin-bottom: 1rem;
+}
+
+.description-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.description-text {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.specifications-highlights {
+    margin-top: 1rem;
+}
+
+.specifications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.specifications-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.spec-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.spec-value {
+    color: #555;
+}
+
+
+/* Reviews Container */
+.reviews-container {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f9f9f9;
+}
+
+/* Reviews Title */
+.reviews-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* Review Rating Section */
+.review-rating {
+    margin-bottom: 1.5rem;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rating-star {
+    font-size: 1.5rem;
+    color: #f39c12; 
+    margin-right: 0.5rem;
+}
+
+.rating-text {
+    font-size: 1rem;
+    color: #555;
+}
+
+.rating-progress {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Rating Progress Bar */
+.rating-progress-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+
+/* Progress Fill */
+.progress-fill {
+    background: #007bff;
+    height: 20px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Zero width for empty progress bars */
+.progress-fill.zero {
+    background: #e0e0e0; 
+}
+
+/* Progress Label */
+.progress-label {
+    position: absolute;
+    right: 0;
+    background: #f9f9f9;
+    padding: 0 0.5rem;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+
+/* Write Review Button */
+.write-review-button {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.write-review-button button {
+    background-color: #f7f7f7;
+    border: 1px solid #dadada;
+    border-radius: 4px;
+    color: #484848;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.write-review-button button i {
+    margin-right: 0.5rem;
+    color: #939393;
+}
+
+.reviews-iframe {
+    margin-top: 1rem;
+}
+
+iframe {
+    border-radius: 8px;
+}
+
+

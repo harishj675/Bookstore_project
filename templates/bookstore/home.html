@@ -1,0 +1,32 @@
+{% extends 'Layouts/base.html' %}
+
+{% block content%}
+
+<div id="books-container">
+    {% if book_list%}
+    {% for book in book_list %}
+    <div class="book-card">
+        <div class="img-container">
+            <img src="{{ book.cover_img.url }}" alt="Book Cover">
+        </div>
+        <div class="book-details">
+            <a href="{% url 'book:details_book' book.id %}"><span class="book-title">{{ book.title }}</span></a>
+            <p class="book-description">{{book.author}}</p>
+            <p class="book-genre">{{book.genre}}</p>
+            <p class="book-genre">{{book.genre}}</p>
+            <p class="book-price">₹{{book.price}}</p>
+        </div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'cart:add_to_cart' book.id %}" class="add-to-cart">
+            <i class="fas fa-shopping-cart"></i> Add to cart</a>
+        {% else %}
+        <a href="{% url 'users:login' %}" class="add-to-cart">
+            <i class="fas fa-shopping-cart"></i> Login for add to cart</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>no books found </p>
+    {% endif %}
+</div>
+{% endblock %}

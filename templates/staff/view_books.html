@@ -1,0 +1,40 @@
+{% extends 'staff/staff.html' %}
+
+{% block content %}
+<div id="views_books">
+    <h1>View All Book Details</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in book_list %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>₹{{ book.price }}</td>
+            <td>{{ book.quantity }}</td>
+            <td>{{ book.discount }} %</td>
+            <td>
+                <a href="{% url 'book:add_book_more_info' book.id %}" class="btn btn-add" title="Add More Details">Add
+                    More Details</a>
+                <a href="{% url 'book:update_book' book.id %}" class="btn btn-update" title="Update Details">Update
+                    Details</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No books available.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

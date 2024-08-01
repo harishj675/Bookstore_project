@@ -1,0 +1,88 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and Layout */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensures header is above the sidebar */
+}
+
+header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    height: calc(100vh - 60px); /* Adjust height to account for fixed header */
+    position: fixed;
+    top: 60px; /* Adjust to account for fixed header height */
+    left: 0;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #444;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #555;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    margin-top: 60px; /* Adjust to account for fixed header */
+    width: calc(100% - 250px);
+}
+
+.content h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.content p {
+    font-size: 16px;
+}

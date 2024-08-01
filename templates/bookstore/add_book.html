@@ -1,0 +1,21 @@
+{% extends 'staff/staff.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div id="login">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Add Book</button>
+    </form>
+
+</div>
+<style>
+
+    #login{
+       margin: 20px;
+       padding: 10px;
+       width: 400px:
+     }
+
+</style>
+{% endblock %}

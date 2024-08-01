@@ -1,0 +1,66 @@
+{% extends 'Layouts/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div id="cart-container">
+    <div id="cart-items">
+        {% for item in cart_list %}
+        <div class="cart-item">
+            <div class="cart-item-image">
+                <img src="{{item.book.cover_img.url}}"
+                     alt="Book Cover">
+                <div class="cart-quantity-controls">
+                    <a href="{% url 'cart:decrease_qty'  item.id %}" class="cart-qty-btn decrease"><i
+                            class="fas fa-minus"></i></a>
+                    <span class="cart-qty">{{item.quantity}}</span>
+                    <a href="{% url 'cart:increase_qty'  item.id %}" class="cart-qty-btn increase"><i
+                            class="fas fa-plus"></i></a>
+                </div>
+            </div>
+            <div class="cart-item-info">
+                <p class="cart-book-title">{{item.book.title}}</p>
+                <p class="cart-book-author">{{item.book.author}}</p>
+                <div class="cart-price-details">
+                    <p class="cart-discount-price">₹{{item.discounted_price}}</p>
+                    <p class="cart-original-price">₹{{item.total_price_original}}</p>
+                    <p class="cart-discount-percentage">({{item.book.discount}}% Off)</p>
+                </div>
+            </div>
+            <a href="{% url 'cart:remove_from_cart' item.id %}" class="cart-remove-btn"><i class="fas fa-trash"></i>
+                REMOVE</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% if cart_count > 0 %}
+    <div id="cart-order-summary">
+        <div class="price-details">
+            <span class="title">Price details</span>
+            <div class="item">
+                <div class="label">Price ({{number_of_books}} items)</div>
+                <div class="value">₹{{total_order_price}}</div>
+            </div>
+            <div class="item">
+                <div class="label">Discount</div>
+                <div class="value discount">− ₹{{discount}}</div>
+            </div>
+            <div class="item">
+                <div class="label">Delivery Charges</div>
+                <div class="value"><span class="discount">{{delivery_charges}}</span></div>
+            </div>
+            <div class="total">
+                Total Amount: ₹{{total_amount}}
+            </div>
+            <div class="discount-info">
+                You will save {{discount}} on this order
+            </div>
+        </div>
+    </div>
+    <button id="cart-place-order-btn">Place Order</button>
+    {% endif %}
+</div>
+<script>
+
+</script>
+{% endblock %}
+
