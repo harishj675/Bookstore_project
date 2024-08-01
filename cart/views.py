@@ -1,12 +1,13 @@
 from bookstore.models import Book
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, reverse
+from users.models import UserProfile
 
-from .models import Cart as UserCart
+from .models import Cart as UserCart, Order, OrderItems
 
 
 def calculate_discount(price, discount):
@@ -109,3 +110,70 @@ def decrease_qty(request, cart_id):
             return HttpResponseRedirect(reverse('cart:cart'))
 
 
+def create_order(request):
+    cart_list = UserCart.objects.filter(user_id=request.user.id)
+    total_order_amount = 0
+    discounted_price = 0
+
+    for item in cart_list:
+        total_order_amount = total_order_amount + item.total_price_original
+        discounted_price = discounted_price + item.discounted_price
+
+    order = Order.objects.create(
+        order_total_amount=discounted_price,
+        user=request.user,
+        numbers_of_items=len(cart_list)
+    )
+    order.save()
+
+    for item in cart_list:
+        order_item = OrderItems.objects.create(
+            order=order,
+            book=Book.objects.get(pk=item.book_id),
+            quantity=item.quantity,
+        )
+        order_item.save()
+        item.delete()
+    print('order created successfully...')
+    return HttpResponse('<h1>Order created successfully....</h1>')
+
+
+def view_orders(request):
+    orders_list = Order.objects.all()
+    print('order list method called....')
+    return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+
+
+def view_order_details(request, order_details_id):
+    order = Order.objects.get(pk=order_details_id)
+    order_items_list = OrderItems.objects.filter(order_id=order_details_id)
+    order_details_list = []
+    for item in order_items_list:
+        order_info = {}
+        book = Book.objects.get(pk=item.book_id)
+        order_info['item_id'] = item.id
+        order_info['book_title'] = book.title
+        order_info['book_price'] = calculate_discount(book.price, book.discount)
+        order_info['quantity'] = item.quantity
+        order_info['total_price'] = order_info['book_price'] * item.quantity
+        order_details_list.append(order_info)
+    # get customer details
+    customer = User.objects.get(pk=order.user_id)
+    customer_profile = UserProfile.objects.get(user_id=order.user_id)
+    context = {
+        'order_details_list': order_details_list,
+        'order': order,
+        'total_amount': order.order_total_amount,
+        'customer': customer,
+        'customer_profile': customer_profile
+    }
+
+    return render(request, 'staff/order_details.html', context)
+
+
+def update_order_status(request, order_id):
+    order = Order.objects.get(pk=order_id)
+    status = request.POST['order_status']
+    order.order_status = status
+    order.save()
+    return HttpResponseRedirect(reverse('cart:view_all_orders'))

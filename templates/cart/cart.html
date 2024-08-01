@@ -56,11 +56,9 @@
             </div>
         </div>
     </div>
-    <button id="cart-place-order-btn">Place Order</button>
+    <a href="{% url 'cart:create_order' %}" id="cart-place-order-btn">Place Order</a>
     {% endif %}
 </div>
-<script>
 
-</script>
 {% endblock %}
 

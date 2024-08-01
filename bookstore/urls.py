@@ -15,5 +15,7 @@ urlpatterns = [
     path('book/<int:book_id>/update/', views.book_update, name='update_book'),
     path('staff/view_books/', views.view_book, name='staff_book_view'),
     path('book/<int:book_id>/add_more_info/', views.add_book_more_info, name='add_book_more_info'),
-    path('staff/view_stock/', views.view_stock, name='view_stock')
+    path('staff/view_stock/', views.view_stock, name='view_stock'),
+    path('staff/add_stock/', views.add_stock, name='add_stock'),
+    path('staff/remove_stock', views.remove_stock, name='remove_stock')
 ]

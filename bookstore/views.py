@@ -1,6 +1,9 @@
 # Create your views here.
-from django.http import HttpResponse
+import json
+
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import BookAddForm, BookAddMoreInfo
 from .models import Book, BookSpecifications, StockLevel
@@ -193,8 +196,50 @@ def view_book(request):
 
 
 def view_stock(request):
-    book = Book.objects.all()
-    stock = StockLevel.objects.all()
-    print(book)
-    print(stock)
-    return render(request, 'staff/view_stocks.html', {'book_list': book})
+    books = Book.objects.prefetch_related('stocklevel_set').all()
+    book_list = []
+
+    for b in books:
+        book = {}
+        book['id'] = b.id
+        book['title'] = b.title
+        book['book_id'] = b.id
+        book['price'] = b.price
+        for stock in b.stocklevel_set.all():
+            book['stock_quantity'] = stock.stock_quantity
+            book['remaining_quantity'] = stock.remaining_quantity
+            book['update'] = stock.updated_at
+        book_list.append(book)
+
+    print(book_list)
+    return render(request, 'staff/view_stocks.html', {'book_list': book_list})
+
+
+@csrf_exempt
+def add_stock(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print(data)
+        new_stock_quantity = int(data['stock_quantity'])
+        book_id = int(data['book_id'])
+        stock = StockLevel.objects.get(book_id=book_id)
+        stock.stock_quantity = stock.stock_quantity + new_stock_quantity
+        stock.remaining_quantity = stock.remaining_quantity + new_stock_quantity
+        stock.save()
+        return JsonResponse({'success': True})
+
+
+def remove_stock(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print(data)
+        new_stock_quantity = int(data['stock_quantity'])
+        book_id = int(data['book_id'])
+        stock = StockLevel.objects.get(book_id=book_id)
+        if stock.stock_quantity > new_stock_quantity:
+            stock.stock_quantity = stock.stock_quantity - new_stock_quantity
+            stock.remaining_quantity = stock.remaining_quantity - new_stock_quantity
+            stock.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False})

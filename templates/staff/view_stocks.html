@@ -1,20 +1,143 @@
 {% extends 'staff/staff.html' %}
 
 {% block content %}
-<div id="stock view">
-    <h1>stock report</h1>
-    <ul>
+<div id="stock_view">
+    <h1>Stock Report</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Stock Quantity</th>
+            <th>Remaining Quantity</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for book in book_list %}
-        <li>
-            <p>{{book.id}}</p>
-            <p>{{book.title}}</p>
-            <p>{{book.price}}</p>
-            <p>{{book.stock_quantity}}</p>
-            <P>{{book.remaining_quantity}}</P>
-            <p>{{book.updated_at}}</p>
-            <a href="">Add Stock</a>
-        </li>
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>₹{{ book.price }}</td>
+            <td>{{ book.stock_quantity }}</td>
+            <td>{{ book.remaining_quantity }}</td>
+            <td>{{ book.update|date:"M d, Y H:i" }}</td>
+            <td>
+                <button class="btn btn-add-stock" data-book-id="{{ book.id }}"> Add/Remove Stock</button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No stock data available.</td>
+        </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 </div>
+
+<!-- Modal Structure -->
+<div id="stockModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Manage Stock</h2>
+        <form id="stockForm" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="bookId" name="book_id">
+            <label for="stockAmount">Stock Quantity:</label>
+            <input type="number" id="stockAmount" name="stock_quantity" required>
+            <button type="button" id="addStockBtn" class="btn btn-add">Add Stock</button>
+            <button type="button" id="removeStockBtn" class="btn btn-remove">Remove Stock</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('stockModal');
+        const openButtons = document.querySelectorAll('.btn-add-stock');
+        const closeButton = document.querySelector('.close-btn');
+        let bookId = null;
+
+        openButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                 bookId = e.target.getAttribute('data-book-id');
+                 console.log('inside target variable ==>' ,bookId)
+                document.getElementById('bookId').value = bookId;
+
+                modal.style.display = 'block';
+            });
+        });
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        document.getElementById('addStockBtn').addEventListener('click', () => {
+            const quantity = document.getElementById('stockAmount').value;
+            const url = `{% url 'book:add_stock' %}`;
+            console.log('book_id' ,bookId)
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    book_id: bookId,
+                    stock_quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Stock added successfully!');
+                    location.reload(); // Refresh to show updated stock
+                } else {
+                    alert('Error adding stock.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('removeStockBtn').addEventListener('click', () => {
+            const quantity = document.getElementById('stockAmount').value;
+            const bookId = document.getElementById('bookId').value;
+            const url = `{% url 'book:remove_stock' %}`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    book_id: bookId,
+                    stock_quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Stock removed successfully!');
+                    location.reload();
+                } else {
+                    alert('Error removing stock.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
 {% endblock %}

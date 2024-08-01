@@ -30,6 +30,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now=True)
     order_total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    numbers_of_items = models.IntegerField(null=True, blank=True)
     order_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
 

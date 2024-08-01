@@ -29,9 +29,9 @@
             <tr>
                 <td>{{ item.item_id }}</td>
                 <td>{{ item.book_title }}</td>
-                <td>${{ item.book_price }}</td>
+                <td>₹{{ item.book_price }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>${{ item.total_price }}</td>
+                <td>₹{{ item.total_price }}</td>
             </tr>
             {% empty %}
             <tr>
@@ -44,24 +44,21 @@
 
     <div id="order_summary">
         <h2>Order Summary</h2>
-        <p><strong>Total Amount:</strong> ${{ total_amount }}</p>
-        <p><strong>Order Status:</strong> {{ order_status }}</p>
+        <p><strong>Total Amount:</strong> ₹{{ total_amount }}</p>
+        <p><strong>Order Status:</strong> {{ order.order_status }}</p>
     </div>
 
     <div id="status_update">
         <h2>Update Order Status</h2>
-        <form method="POST" action="{% url 'order:update_status' order.id %}">
+        <form method="POST" action="{% url 'cart:update_order_status' order.id%}">
             {% csrf_token %}
             <label for="order_status">Change Status:</label>
             <select id="order_status" name="order_status">
-                <option value="pending" {% if order_status==
-                'pending' %}selected{% endif %}>Pending</option>
-                <option value="shipped" {% if order_status==
-                'shipped' %}selected{% endif %}>Shipped</option>
-                <option value="delivered" {% if order_status==
-                'delivered' %}selected{% endif %}>Delivered</option>
-                <option value="cancelled" {% if order_status==
-                'cancelled' %}selected{% endif %}>Cancelled</option>
+                <option value="pending" {% if order_status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="processing" {% if order_status == 'processing' %}selected{% endif %}>processing</option>
+                <option value="shipped" {% if order_status == 'shipped' %}selected{% endif %}>Shipped</option>
+                <option value="delivered" {% if order_status == 'delivered' %}selected{% endif %}>Delivered</option>
+<!--                <option value="cancelled" {% if order_status == 'processing' %}selected{% endif %}>processing</option>-->
             </select>
             <button type="submit" class="btn btn-update-status">Update Status</button>
         </form>
