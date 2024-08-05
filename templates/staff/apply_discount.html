@@ -1,0 +1,42 @@
+{% extends 'staff/staff.html' %}
+
+{% block content %}
+<div id="orders_view">
+    <h1>Books List</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Book ID</th>
+            <th>Book Title</th>
+            <th>Book Author</th>
+            <th>Book Price</th>
+            <th>Book Discount</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in book_list %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author}}</td>
+            <td>₹{{ book.price }}</td>
+            <td>{{ book.discount }}%</td>
+            <td>
+                <form method="POST" action="{% url 'book:apply_discount' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="book_id" name="book_id" value="{{book.id}}">
+                    <input type="number" id="discount" name="discount" placeholder="discount">
+                    <button type="submit" class="btn btn-update-status">Apply Discount</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No Books available.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

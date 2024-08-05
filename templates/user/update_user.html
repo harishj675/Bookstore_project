@@ -1,0 +1,42 @@
+{% extends 'Layouts/base.html' %}
+{% block content %}
+<div id="update_user">
+    <form method="post" action="{% url 'users:update_user' %}">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Update User Information</legend>
+            <div>
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+            </div>
+
+            <div>
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+            </div>
+
+            <div>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+
+            <div>
+                {{ form.address.label_tag }}
+                {{ form.address }}
+            </div>
+
+            <div>
+                {{ form.mobile_number.label_tag }}
+                {{ form.mobile_number }}
+            </div>
+
+            <div>
+                {{ form.pincode.label_tag }}
+                {{ form.pincode }}
+            </div>
+
+            <button type="submit">Update Profile</button>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

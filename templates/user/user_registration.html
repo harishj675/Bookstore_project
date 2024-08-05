@@ -1,0 +1,14 @@
+{% extends 'Layouts/base.html' %}
+
+{% block content%}
+
+<div id="user_register">
+    <form method="post" action="{% url 'users:create_user' %}">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Create User">
+        <a href="#">Login with Google</a>
+    </form>
+</div>
+
+{% endblock %}

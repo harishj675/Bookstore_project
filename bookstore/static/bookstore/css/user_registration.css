@@ -1,0 +1,70 @@
+ /* Container Styling */
+    #user_register {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Form Styling */
+    #user_register form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Input Fields */
+    #user_register form input[type="text"],
+    #user_register form input[type="email"],
+    #user_register form input[type="password"] {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    #user_register form input[type="text"]:focus,
+    #user_register form input[type="email"]:focus,
+    #user_register form input[type="password"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Submit Button */
+    #user_register form input[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    #user_register form input[type="submit"]:hover {
+        background-color: #0056b3;
+        transform: scale(1.02);
+    }
+
+    /* Link Styling */
+    #user_register form a {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    #user_register form a:hover {
+        text-decoration: underline;
+    }

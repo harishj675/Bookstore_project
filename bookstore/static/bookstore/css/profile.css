@@ -1,0 +1,176 @@
+/* Profile Page Styling */
+#profile {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#user-info {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+#user-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.update-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.update-btn:hover {
+    background: #0056b3;
+}
+
+.tabs {
+    margin-bottom: 2rem;
+}
+
+.tab-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 1rem;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: #fff;
+}
+
+.orders-section {
+    display: none;
+}
+
+#current-orders, #order-history {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
+    margin-bottom: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #fff;
+}
+
+.order-header {
+    margin-bottom: 1rem;
+}
+
+.order-header p {
+    margin: 0.5rem 0;
+}
+
+.order-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-detail {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.book-detail-container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.book-img {
+    flex: 1;
+    max-width: 150px;
+    margin-right: 1rem;
+}
+
+.book-img img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.book-info {
+    flex: 2;
+}
+
+.book-info p {
+    margin: 0.5rem 0;
+}
+
+.cancel-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.cancel-btn:hover {
+    background: #c82333;
+}
+
+/* Status Colors */
+.order-item.pending {
+    border-color: #ffc107;
+    background: #fff3cd;
+}
+
+.order-item.shipped {
+    border-color: #17a2b8;
+    background: #d1ecf1;
+}
+
+.order-item.cancelled {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+.order-item.delivered {
+    border-color: #28a745;
+    background: #d4edda;
+}

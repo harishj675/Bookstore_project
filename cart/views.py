@@ -1,10 +1,12 @@
 from bookstore.models import Book
+from bookstore.models import StockLevel
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from users.models import UserProfile
 
 from .models import Cart as UserCart, Order, OrderItems
@@ -31,7 +33,12 @@ def add_to_cart(request, book_id):
         cart_book.total_price_original = cart_book.total_price_original * cart_book.quantity
         cart_book.discounted_price = calculate_discount(cart_book.total_price_original, book.discount)
         cart_book.save()
-        return JsonResponse({'success': True})
+        if request.GET.get('quantity'):
+            return JsonResponse({'success': True})
+        else:
+            messages.success(request, 'book added successfully in Cart')
+            return HttpResponseRedirect(reverse('book:home'))
+
     else:
         print("Book_id in add to book__", book_id)
         book = get_object_or_404(Book, pk=book_id)
@@ -44,7 +51,11 @@ def add_to_cart(request, book_id):
             discounted_price=calculate_discount(book.price, book.discount)
         )
         cart.save()
-        return JsonResponse({'success': True})
+        if request.GET.get('quantity'):
+            return JsonResponse({'success': True})
+        else:
+            messages.success(request, 'book added successfully in Cart')
+            return HttpResponseRedirect(reverse('book:home'))
 
 
 def remove_from_cart(request, cart_id):
@@ -135,12 +146,24 @@ def create_order(request):
         order_item.save()
         item.delete()
     print('order created successfully...')
-    return HttpResponseRedirect('users:profile')
+    return redirect('users:profile')
 
 
 def view_orders(request):
-    orders_list = Order.objects.all()
-    return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
+    if user_profile.roll == 'Staff':
+        orders_list = Order.objects.filter(order_status='Pending')
+        return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+    else:
+        orders_list = Order.objects.all()
+        return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+
+
+def cancel_order(request, order_id):
+    order = Order.objects.get(pk=order_id)
+    order.order_status = 'Cancelled'
+    order.save()
+    return redirect('users:profile')
 
 
 def view_order_details(request, order_details_id):
@@ -173,6 +196,32 @@ def view_order_details(request, order_details_id):
 def update_order_status(request, order_id):
     order = Order.objects.get(pk=order_id)
     status = request.POST['order_status']
+    if status == 'shipped':
+        order_items_list = OrderItems.objects.filter(order_id=order_id)
+        for item in order_items_list:
+            book_stock_level = StockLevel.objects.get(book_id=item.book_id)
+            book_stock_level.remaining_quantity = book_stock_level.remaining_quantity - item.quantity
+            book_stock_level.sell_quantity = book_stock_level.sell_quantity + item.quantity
+            book_stock_level.save()
     order.order_status = status
     order.save()
+    messages.success(request, 'order status updated successfully.')
     return HttpResponseRedirect(reverse('cart:view_all_orders'))
+
+
+def completed_orders(request):
+    pass
+
+
+def change_order_status(request):
+    orders_list = Order.objects.exclude(order_status__in=['Pending', 'Cancelled', 'Shipped', 'delivered'])
+    return render(request, 'staff/change_order_status.html', {'orders_list': orders_list})
+
+
+def completed_orders_list(request):
+    orders_list = Order.objects.filter(order_status='delivered')
+    return render(request, 'staff/completed_order_list.html', {'orders_list': orders_list})
+
+
+def sells_report(request):
+    pass

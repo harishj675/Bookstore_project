@@ -7,10 +7,8 @@
         <thead>
         <tr>
             <th>Title</th>
-            <th>Author</th>
             <th>Price</th>
             <th>Quantity</th>
-            <th>Discount</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -18,15 +16,12 @@
         {% for book in book_list %}
         <tr>
             <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
             <td>₹{{ book.price }}</td>
             <td>{{ book.quantity }}</td>
-            <td>{{ book.discount }} %</td>
             <td>
-                <a href="{% url 'book:add_book_more_info' book.id %}" class="btn btn-add" title="Add More Details">Add
-                    More Details</a>
-                <a href="{% url 'book:update_book' book.id %}" class="btn btn-update" title="Update Details">Update
-                    Details</a>
+                <a href="{% url 'book:remove_book' book.id %}" class="btn btn-add" title="Add More Details">Remove
+                    Book</a>
+
             </td>
         </tr>
         {% empty %}

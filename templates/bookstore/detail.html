@@ -111,10 +111,28 @@
                     width="100%" height="450" frameborder="0"></iframe>
         </div>
     </div>
-
+</div>
+<!-- Modal for Writing a Review -->
+<div id="review-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Write a Review</h2>
+        <form id="review-form">
+            <div class="form-group">
+                <label for="review-title">Review Title:</label>
+                <input type="text" id="review-title" name="review-title" required>
+            </div>
+            <div class="form-group">
+                <label for="review-content">Review Content:</label>
+                <textarea id="review-content" name="review-content" rows="5" required></textarea>
+            </div>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Quantity Controls
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
         const qtySpan = document.getElementById('qty');
@@ -155,7 +173,92 @@
                 console.error('Error:', error);
             });
         });
+
+        // Modal Controls
+        const reviewModal = document.getElementById('review-modal');
+        const openModalBtn = document.querySelector('.write-review-button button');
+        const closeModalSpan = document.querySelector('.modal .close');
+        const reviewForm = document.getElementById('review-form');
+
+        // Open the modal
+        openModalBtn.addEventListener('click', function() {
+            reviewModal.style.display = 'block';
+        });
+
+        // Close the modal
+        closeModalSpan.addEventListener('click', function() {
+            reviewModal.style.display = 'none';
+        });
+
+        // Close the modal when clicking outside of the modal
+        window.addEventListener('click', function(event) {
+            if (event.target === reviewModal) {
+                reviewModal.style.display = 'none';
+            }
+        });
+
+        // Handle form submission
+        reviewForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            // Collect form data
+            const title = document.getElementById('review-title').value;
+            const content = document.getElementById('review-content').value;
+
+            // Here you can add logic to send form data to the server
+
+            // Close the modal
+            reviewModal.style.display = 'none';
+
+            // Optionally, you could also clear the form inputs
+            reviewForm.reset();
+        });
     });
 </script>
+
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const decreaseBtn = document.getElementById('decrease-qty');-->
+<!--        const increaseBtn = document.getElementById('increase-qty');-->
+<!--        const qtySpan = document.getElementById('qty');-->
+<!--        const addToCartBtn = document.querySelector('.add-to-cart');-->
+<!--        const bookId = "{{ book.id }}";-->
+
+<!--        let quantity = 1;-->
+
+<!--        function updateQuantity(newQty) {-->
+<!--            if (newQty < 1) newQty = 1;-->
+<!--            quantity = newQty;-->
+<!--            qtySpan.textContent = quantity;-->
+<!--        }-->
+
+<!--        decreaseBtn.addEventListener('click', function() {-->
+<!--            updateQuantity(quantity - 1);-->
+<!--        });-->
+
+<!--        increaseBtn.addEventListener('click', function() {-->
+<!--            updateQuantity(quantity + 1);-->
+<!--        });-->
+
+<!--        addToCartBtn.addEventListener('click', function() {-->
+<!--            const url = `{% url 'cart:add_to_cart' book.id %}?quantity=${quantity}`;-->
+
+<!--            fetch(url, {-->
+<!--                method: 'GET',-->
+<!--            })-->
+<!--            .then(response => response.json())-->
+<!--            .then(result => {-->
+<!--                if (result.success) {-->
+<!--                    alert('Added to cart successfully!');-->
+<!--                } else {-->
+<!--                    alert('Error adding to cart.');-->
+<!--                }-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error:', error);-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
 
 {% endblock %}

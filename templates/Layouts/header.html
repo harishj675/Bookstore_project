@@ -1,3 +1,4 @@
+
 <header>
     <div id="logo">
         <a href="{% url 'book:home' %}"> <span>Bookstore</span></a>
@@ -11,7 +12,7 @@
 
     <div id="header-buttons">
         {% if user.is_authenticated %}
-        <a href="{% url 'users:profile' user.id %}" class="button profile-icon"><i class="fas fa-user"></i>{{user}}</a>
+        <a href="{% url 'users:profile'  %}" class="button profile-icon"><i class="fas fa-user"></i>{{user}}</a>
         <a href="{% url 'cart:cart' %}" class="button cart-icon">
             <i class="fas fa-shopping-cart"></i> My Cart
             {% if cart_count > 0 %}

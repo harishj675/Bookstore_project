@@ -1,9 +1,13 @@
 # Create your views here.
 import json
 
-from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
+from django.db.models import F, ExpressionWrapper, FloatField
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.shortcuts import reverse
 from django.views.decorators.csrf import csrf_exempt
+from users.models import UserProfile
 
 from .forms import BookAddForm, BookAddMoreInfo
 from .models import Book, BookSpecifications, StockLevel
@@ -11,7 +15,12 @@ from .models import Book, BookSpecifications, StockLevel
 
 def index(request):
     try:
-        book_list = Book.objects.all()
+        book_list = Book.objects.annotate(
+            discounted_price=ExpressionWrapper(
+                F('price') * (1 - F('discount') * 0.01),
+                output_field=FloatField()
+            )
+        )
         context = {
             'book_list': book_list
         }
@@ -133,9 +142,13 @@ def add_book_more_info(request, book_id):
 
 def book_remove(request, book_id):
     try:
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         book = get_object_or_404(Book, pk=book_id)
         book.delete()
-        return HttpResponse('Book deleted successfully.....')
+        if user_profile.roll == 'Manger':
+            return HttpResponseRedirect(reverse('users:manger_home'))
+        else:
+            return HttpResponseRedirect(reverse('users:staff_home'))
     except Http404:
         print("book not found")
         return HttpResponse('Book not found.')
@@ -217,6 +230,7 @@ def view_stock(request):
 
 @csrf_exempt
 def add_stock(request):
+    print('add stock request callled.....')
     if request.method == 'POST':
         data = json.loads(request.body)
         print(data)
@@ -230,6 +244,7 @@ def add_stock(request):
 
 
 def remove_stock(request):
+    print('add stock request called.....')
     if request.method == 'POST':
         data = json.loads(request.body)
         print(data)
@@ -243,3 +258,26 @@ def remove_stock(request):
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False})
+
+
+def remove_book_view(request):
+    book_list = Book.objects.all()
+    return render(request, 'staff/remove_book_view.html', {'book_list': book_list})
+
+
+def apply_discount(request):
+    if request.method == 'POST':
+        try:
+            book_id = request.POST['book_id']
+            new_discount = request.POST['discount']
+            book = Book.objects.get(pk=book_id)
+            book.discount = new_discount
+            book.save()
+            messages.success(request, f'Discount apply to the book{book.title}')
+            return HttpResponseRedirect(reverse('book:apply_discount'))
+        except Exception as e:
+            messages.error(requst, 'error in applying discount on book')
+
+    else:
+        book_list = Book.objects.all()
+        return render(request, 'staff/apply_discount.html', {'book_list': book_list})

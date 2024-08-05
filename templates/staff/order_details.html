@@ -58,7 +58,9 @@
                 <option value="processing" {% if order_status == 'processing' %}selected{% endif %}>processing</option>
                 <option value="shipped" {% if order_status == 'shipped' %}selected{% endif %}>Shipped</option>
                 <option value="delivered" {% if order_status == 'delivered' %}selected{% endif %}>Delivered</option>
-<!--                <option value="cancelled" {% if order_status == 'processing' %}selected{% endif %}>processing</option>-->
+                {% if user_profile.roll  == 'Manger' %}
+                <option value="cancelled" {% if order_status == 'cancelled' %}selected{% endif %}>cancelled</option>
+                {% endif %}
             </select>
             <button type="submit" class="btn btn-update-status">Update Status</button>
         </form>

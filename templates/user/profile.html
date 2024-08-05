@@ -1,41 +1,141 @@
 {% extends 'Layouts/base.html' %}
-{% block content%}
+{% block content %}
 <div id="profile">
     <h1>Profile Page</h1>
 
-    <div id="user_info">
-        <p>{{request.user.first_name}} {{request.user.last_name}}</p>
-        <p>{{request.user.email}}</p>
-        <p>{{user_profile.mobile_number}}</p>
-        <p>{{user_profile.address}}</p>
-        <p>{{user_profile.pincode}}</p>
-        <a href="">update User</a>
+    <div id="user-info">
+        <h2>User Information</h2>
+        <p><strong>Full Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Mobile Number:</strong> {{ user_profile.mobile_number }}</p>
+        <p><strong>Address:</strong> {{ user_profile.address }}</p>
+        <p><strong>Pincode:</strong> {{ user_profile.pincode }}</p>
+        <a href="{% url 'users:update_user' %}" class="update-btn">Update User Info</a>
+        <a href="{% url 'users:password-change' %}" class="update-btn">Change Password</a>
     </div>
 
-    <div id="users_order">
-        <ul>
+    <div class="tabs">
+        <button id="current-orders-tab" class="tab-btn">Current Orders</button>
+        <button id="order-history-tab" class="tab-btn">Order History</button>
+    </div>
+
+    <div id="current-orders" class="orders-section">
+        <h2>Current Orders</h2>
+        {% if order_list %}
+        <ul class="order-list">
             {% for order in order_list %}
-            <li>
-                <p>{{order.id}}</p>
-                <ul>
-                    {%for item in order.items %}
-                    <li>
-                        <img src="{{ item.cover_img.url }}" alt="Book Cover">
-                        <p>{{item.book_title}}</p>
-                        <p>{{item.book_author}}</p>
-                        <p>{{item.book_price}}</p>
-                        <p>{{item.book_discount}}
-                        <p>{{item.discounted_price}}</p>
-                        <p>{{item.item_quantity}}</p>
-                        <p>{{item.total_price}}</p>
+            {% if order.status == 'Pending' or order.status == 'shipped' %}
+            <li class="order-item">
+                <div class="order-header">
+                    <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+                    <p><strong>Status:</strong> {{ order.status }}</p>
+                    <p><strong>Total Amount:</strong> {{ order.order_total_amount }}</p>
+                </div>
+                <ul class="order-items">
+                    {% for item in order.items %}
+                    <li class="order-detail">
+                        <div class="book-detail-container">
+                            <div class="book-img">
+                                <img src="{{ item.cover_img.url }}" alt="Book Cover">
+                            </div>
+                            <div class="book-info">
+                                <p><strong>Title:</strong> {{ item.book_title }}</p>
+                                <p><strong>Author:</strong> {{ item.book_author }}</p>
+                                <p><strong>Price:</strong> {{ item.book_price }}</p>
+                                <p><strong>Discount:</strong> {{ item.book_discount }}</p>
+                                <p><strong>Discounted Price:</strong> {{ item.discounted_price }}</p>
+                                <p><strong>Quantity:</strong> {{ item.item_quantity }}</p>
+                                <p><strong>Total Price:</strong> {{ item.total_price }}</p>
+                            </div>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
-                <p>{{order.status}}</p>
-                <p>{{order.order_total_amount}}</p>
+                <a href="{% url 'cart:cancel_order' order.order_id %}" class="cancel-btn">Cancel Order</a>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
+        {% else %}
+        <p>No orders found.</p>
+        {% endif %}
+    </div>
+
+    <div id="order-history" class="orders-section">
+        <h2>Order History</h2>
+        {% if order_list %}
+        <ul class="order-list">
+            {% for order in order_list %}
+            {% if order.status == 'Cancelled' or order.status == 'delivered' %}
+            <li class="order-item">
+                <div class="order-header">
+                    <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+                    <p><strong>Status:</strong> {{ order.status }}</p>
+                    <p><strong>Total Amount:</strong> {{ order.order_total_amount }}</p>
+                </div>
+                <ul class="order-items">
+                    {% for item in order.items %}
+                    <li class="order-detail">
+                        <div class="book-detail-container">
+                            <div class="book-img">
+                                <img src="{{ item.cover_img.url }}" alt="Book Cover">
+                            </div>
+                            <div class="book-info">
+                                <p><strong>Title:</strong> {{ item.book_title }}</p>
+                                <p><strong>Author:</strong> {{ item.book_author }}</p>
+                                <p><strong>Price:</strong> {{ item.book_price }}</p>
+                                <p><strong>Discount:</strong> {{ item.book_discount }}</p>
+                                <p><strong>Discounted Price:</strong> {{ item.discounted_price }}</p>
+                                <p><strong>Quantity:</strong> {{ item.item_quantity }}</p>
+                                <p><strong>Total Price:</strong> {{ item.total_price }}</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'cart:cancel_order' order.order_id %}" class="cancel-btn">Cancel Order</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No orders found.</p>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    function showTab(tabName) {
+        const sections = document.querySelectorAll('.orders-section');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        if (tabName === 'current') {
+            document.getElementById('current-orders').style.display = 'block';
+            document.getElementById('current-orders-tab').classList.add('active');
+        } else if (tabName === 'history') {
+            document.getElementById('order-history').style.display = 'block';
+            document.getElementById('order-history-tab').classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab('current');
+
+        document.getElementById('current-orders-tab').addEventListener('click', () => {
+            showTab('current');
+        });
+
+        document.getElementById('order-history-tab').addEventListener('click', () => {
+            showTab('history');
+        });
+    });
+</script>
 {% endblock %}

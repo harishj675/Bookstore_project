@@ -13,8 +13,11 @@
             <a href="{% url 'book:details_book' book.id %}"><span class="book-title">{{ book.title }}</span></a>
             <p class="book-description">{{book.author}}</p>
             <p class="book-genre">{{book.genre}}</p>
-            <p class="book-genre">{{book.genre}}</p>
-            <p class="book-price">₹{{book.price}}</p>
+            <div class="price-container">
+                <p class="discount-price">₹{{book.discounted_price}}</p>
+                <p class="original-price">₹{{book.price}}</p>
+                <p class="discount-percentage">({{book.discount}}% Off)</p>
+            </div>
         </div>
         {% if user.is_authenticated %}
         <a href="{% url 'cart:add_to_cart' book.id %}" class="add-to-cart">
