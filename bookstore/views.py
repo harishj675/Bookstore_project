@@ -1,12 +1,14 @@
 # Create your views here.
 import json
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F, ExpressionWrapper, FloatField
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.shortcuts import reverse
+from django.shortcuts import reverse ,redirect
+from django.utils.translation import activate
 from users.models import UserProfile
 
 from .forms import BookAddForm, BookAddMoreInfo
@@ -27,6 +29,7 @@ def index(request):
         return render(request, 'bookstore/home.html', context)
 
     except Exception as e:
+        print('error in ----', e)
         return HttpResponse(f'An error occurred: {e}')
 
 
@@ -308,3 +311,11 @@ def apply_discount(request):
     else:
         book_list = Book.objects.all()
         return render(request, 'staff/apply_discount.html', {'book_list': book_list})
+
+
+def set_language(request):
+    lang_code = request.GET.get('language', settings.LANGUAGE_CODE)
+    activate(lang_code)
+    response = redirect(request.META.get('HTTP_REFERER', '/'))
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
+    return response

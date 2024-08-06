@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('book/search/', views.book_search, name='search_book'),
     path('book/<int:book_id>/details/', views.book_details, name='details_book'),
+    path('set_language/', views.set_language, name='set_language'),
     # path('<char:book_categories>/book_category', views.book_categories, name='book_category')
 
     # staff urls

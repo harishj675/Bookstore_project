@@ -1,35 +1,39 @@
 {% extends 'Layouts/base.html' %}
 
-{% block content%}
+{% load i18n %}
+
+{% block content %}
 
 <div id="books-container">
-    {% if book_list%}
+    {% if book_list %}
     {% for book in book_list %}
     <div class="book-card">
         <div class="img-container">
-            <img src="{{ book.cover_img.url }}" alt="Book Cover">
+            <img src="{{ book.cover_img.url }}" alt="{% trans 'Book Cover' %}">
         </div>
         <div class="book-details">
             <a href="{% url 'book:details_book' book.id %}"><span class="book-title">{{ book.title }}</span></a>
-            <p class="book-description">{{book.author}}</p>
-            <p class="book-genre">{{book.genre}}</p>
+            <p class="book-description">{{ book.author }}</p>
+            <p class="book-genre">{{ book.genre }}</p>
             <div class="price-container">
-                <p class="discount-price">₹{{book.discounted_price}}</p>
-                <p class="original-price">₹{{book.price}}</p>
-                <p class="discount-percentage">({{book.discount}}% Off)</p>
+                <p class="discount-price">₹{{ book.discounted_price }}</p>
+                <p class="original-price">₹{{ book.price }}</p>
+                <p class="discount-percentage">({{ book.discount }}% Off)</p>
             </div>
         </div>
         {% if user.is_authenticated %}
         <a href="{% url 'cart:add_to_cart' book.id %}" class="add-to-cart">
-            <i class="fas fa-shopping-cart"></i> Add to cart</a>
+            <i class="fas fa-shopping-cart"></i> {% trans "Add to cart" %}
+        </a>
         {% else %}
         <a href="{% url 'users:login' %}" class="add-to-cart">
-            <i class="fas fa-shopping-cart"></i> Login for add to cart</a>
+            <i class="fas fa-shopping-cart"></i> {% trans "Login to add to cart" %}
+        </a>
         {% endif %}
     </div>
     {% endfor %}
     {% else %}
-    <p>no books found </p>
+    <p>{% trans "No books found" %}</p>
     {% endif %}
 </div>
 {% endblock %}
