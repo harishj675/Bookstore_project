@@ -8,6 +8,10 @@ header {
     color: #fff;
 }
 
+header a{
+  color:#fff;
+}
+
 #logo {
     font-size: 1.8rem;
     font-weight: bold;

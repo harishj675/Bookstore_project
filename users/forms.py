@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 
 class LoginForm(forms.Form):
     username = forms.CharField(
-        label='username',
-        max_length=20,
+        label='Username or Email',
+        max_length=100,
         required=True,
     )
     password = forms.CharField(

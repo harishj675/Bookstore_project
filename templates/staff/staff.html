@@ -19,6 +19,12 @@
 <header>
     <h1>Dashboard for {{ user_profile.roll }}</h1>
     <a href="{% url 'users:logout'%}" class="button logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="{% url 'users:view_notifications'%}" id="notificationButton">
+        <i class="fas fa-bell"></i>
+        {% if count_of_unread_notifications > 0 %}
+        <span class="notification-count">{{ count_of_unread_notifications }}</span>
+        {% endif %}
+    </a>
 </header>
 
 <aside class="sidebar">
@@ -26,7 +32,7 @@
     <ul>
         <li><a href="{% url 'book:add_book' %}">Add Book</a></li>
         <li><a href="{% url 'book:staff_book_view'%}">View Books</a></li>
-        {% if user_profile.roll == 'Manger' %}
+        {% if user_profile.roll == 'Manager' %}
         <li><a href="{% url 'book:remove_book_view' %}">Remove Book</a></li>
         <li><a href="{% url 'book:apply_discount' %}">Apply Discount</a></li>
         {% endif %}
@@ -41,7 +47,7 @@
     <h2>Order Management</h2>
     <ul>
         <li><a href="{% url 'cart:view_all_orders' %}">View Orders</a></li>
-        {% if user_profile.roll == 'Manger' %}
+        {% if user_profile.roll == 'Manager' %}
         <li><a href="{% url 'cart:change_order_status'%}">Change Order Status</a></li>
         <li><a href="{% url 'cart:completed_orders_list' %}">Completed Orders</a></li>
         {% endif %}

@@ -1,4 +1,3 @@
-
 <header>
     <div id="logo">
         <a href="{% url 'book:home' %}"> <span>Bookstore</span></a>
@@ -17,6 +16,12 @@
             <i class="fas fa-shopping-cart"></i> My Cart
             {% if cart_count > 0 %}
             <span class="cart-count">{{cart_count}}</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'users:view_notifications'%}" id="notificationButton">
+            <i class="fas fa-bell"></i>
+            {% if count_of_unread_notifications > 0 %}
+            <span class="notification-count">{{ count_of_unread_notifications }}</span>
             {% endif %}
         </a>
         <a href="{% url 'users:logout'%}" class="button logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>

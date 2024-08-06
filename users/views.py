@@ -2,11 +2,12 @@ from bookstore.models import Book
 from cart.models import Order
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse
 
 from .forms import LoginForm, UserProfileForm, SignUpForm
-from .models import UserProfile
+from .models import UserProfile, Notifications
 
 
 def calculate_discount(price, discount):
@@ -19,19 +20,19 @@ def calculate_discount(price, discount):
         return price
 
 
+@login_required
 def profile(request):
     user_profile = UserProfile.objects.get(user_id=request.user.id)
     try:
         orders = Order.objects.prefetch_related('orderitems_set') \
             .filter(user_id=request.user.id) \
-            .order_by('order_date')
+            .order_by('-order_date')
 
     except Exception as e:
         orders = []
 
     order_list = []
     for order in orders:
-        print("called")
         order_dict = {}
         order_dict['order_id'] = order.id
         items_list = []
@@ -52,8 +53,6 @@ def profile(request):
         order_dict['status'] = order.order_status
         order_dict['order_total_amount'] = order.order_total_amount
         order_list.append(order_dict)
-
-    print(len(order_list))
     context = {
         'user_profile': user_profile,
         'order_list': order_list,
@@ -78,8 +77,31 @@ def create_user(request):
         return render(request, 'user/user_registration.html', {'form': form})
 
 
+# def login_user(request):
+#     if request.method == "POST":
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             print("user authenticate successfully....")
+#             login(request, user)
+#             messages.success(request, 'you logged successfully...')
+#             user_profile = UserProfile.objects.get(user_id=request.user.id)
+#             if user_profile.roll == 'Staff' or user_profile.roll == 'Manager':
+#                 return HttpResponseRedirect(reverse('users:staff_home'))
+#
+#             return HttpResponseRedirect(reverse('book:home'))
+#         else:
+#             messages.error(request, 'Invalid username / password')
+#             print("Error in authenticating the user details.")
+#             return render(request, 'user/login.html', {'login_form': LoginForm()})
+#     else:
+#         return render(request, 'user/login.html', {'login_form': LoginForm()})
+
 def login_user(request):
     if request.method == "POST":
+        print("login method called...")
+        print(request.POST)
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
@@ -88,9 +110,7 @@ def login_user(request):
             login(request, user)
             messages.success(request, 'you logged successfully...')
             user_profile = UserProfile.objects.get(user_id=request.user.id)
-            if user_profile.roll == 'Staff':
-                return HttpResponseRedirect(reverse('users:staff_home'))
-            if user_profile.roll == 'Manger':
+            if user_profile.roll == 'Staff' or user_profile.roll == 'Manager':
                 return HttpResponseRedirect(reverse('users:staff_home'))
 
             return HttpResponseRedirect(reverse('book:home'))
@@ -109,6 +129,7 @@ def logout_user(request):
     return redirect('book:home')
 
 
+@login_required
 def update_user(request):
     if request.method == 'POST':
         try:
@@ -148,9 +169,27 @@ def update_user(request):
         return render(request, 'user/update_user.html', {'form': form})
 
 
+@login_required
 def staff_home(request):
     return render(request, 'staff/staff.html')
 
 
-def manger_home(request):
-    return render(request, 'staff/staff.html')
+def view_notifications(request):
+    notifications_list = Notifications.objects.filter(user_id=request.user.id, is_read=False).order_by('-timestamp')
+
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
+    if user_profile.roll == 'User':
+        return render(request, 'user/notification.html', {'notifications': notifications_list})
+    else:
+        return render(request, 'staff/notification.html', {'notifications': notifications_list})
+
+
+def mark_as_read(request, notification_id):
+    try:
+        notification = Notifications.objects.get(pk=notification_id)
+        notification.is_read = True
+        notification.save()
+        return redirect('users:view_notifications')
+    except Exception as e:
+        print('Error in setting notification as read.')
+        return redirect('users:view_notifications')

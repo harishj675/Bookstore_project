@@ -2,11 +2,11 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F, ExpressionWrapper, FloatField
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import reverse
-from django.views.decorators.csrf import csrf_exempt
 from users.models import UserProfile
 
 from .forms import BookAddForm, BookAddMoreInfo
@@ -52,6 +52,7 @@ def book_search(request):
     return render(request, 'bookstore/home.html', {'book_list': book_list})
 
 
+@login_required
 def book_review(request, book_id):
     pass
 
@@ -79,6 +80,8 @@ def book_categories(request, book_categories):
 
 
 # staff views
+@login_required
+@permission_required('bookstore.add_book', raise_exception=True)
 def book_add(request):
     if request.method == "POST":
         try:
@@ -102,17 +105,27 @@ def book_add(request):
                 cover_img=cover_img
             )
             book.save()
-            # Adding book specifications
-            return HttpResponse('Book created successfully ....')
+            # create stock leval
+            stock_leval = StockLevel.objects.create(
+                book=book,
+                stock_quantity=book.quantity,
+                remaining_quantity=book.quantity,
+            )
+            stock_leval.save()
+            return HttpResponseRedirect(reverse('users:staff_home'))
         except KeyError as e:
-            return HttpResponse(f'Missing form field: {e}')
+            messages.error(request, f'missing filed in form {e}')
+            return HttpResponseRedirect(reverse('users:staff_home'))
         except Exception as e:
-            return HttpResponse(f'An error occurred: {e}')
+            messages.error(f'error in adding book')
+            return HttpResponseRedirect(reverse('users:staff_home'))
 
     else:
         return render(request, 'bookstore/add_book.html', {'form': BookAddForm()})
 
 
+@login_required
+@permission_required('bookstore.add_bookspecifications', raise_exception=True)
 def add_book_more_info(request, book_id):
     if request.method == 'POST':
         book_description = request.POST['book_description']
@@ -134,28 +147,33 @@ def add_book_more_info(request, book_id):
             book_tag=book_tag
         )
         book_specifications.save()
-        return HttpResponse('book more details added successfully...')
+        messages.success(request, 'book specifications added successfully.')
+        return HttpResponseRedirect(reverse('users:staff_home'))
 
     else:
         return render(request, 'bookstore/add_more_info.html', {'form': BookAddMoreInfo(), 'book_id': book_id})
 
 
+@login_required
+@permission_required('bookstore.delete_book', raise_exception=True)
 def book_remove(request, book_id):
     try:
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         book = get_object_or_404(Book, pk=book_id)
         book.delete()
-        if user_profile.roll == 'Manger':
-            return HttpResponseRedirect(reverse('users:manger_home'))
-        else:
-            return HttpResponseRedirect(reverse('users:staff_home'))
+        messages.success(request, 'book deleted successfully..')
+        return HttpResponseRedirect(reverse('users:staff_home'))
     except Http404:
         print("book not found")
-        return HttpResponse('Book not found.')
+        messages.error(request, f'book not found')
+        return HttpResponseRedirect(reverse('users:staff_home'))
     except Exception as e:
+        messages.error(request, 'error in removing book')
         return HttpResponse(f'An error occurred: {e}')
 
 
+@login_required
+@permission_required('bookstore.change_book', raise_exception=True)
 def book_update(request, book_id):
     if request.method == 'POST':
         try:
@@ -179,14 +197,16 @@ def book_update(request, book_id):
 
             # Save the updated book instance
             book.save()
-
-            return HttpResponse('Book updated successfully ....')
+            messages.success(request, 'book updated successfully..')
+            return HttpResponseRedirect(reverse('users:staff_home'))
         except KeyError as e:
             print('Error in updating book ', e)
-            return HttpResponse(f'Missing form field: {e}')
+            messages.error(request, f'Missing filed in form {e}')
+            return HttpResponseRedirect(reverse('users:staff_home'))
         except Exception as e:
             print('Error in updating book ', e)
-            return HttpResponse(f'An error occurred: {e}')
+            messages.error(request, f'error in updating book..')
+            return HttpResponseRedirect(reverse('users:staff_home'))
 
     else:
         book = get_object_or_404(Book, pk=book_id)
@@ -228,7 +248,7 @@ def view_stock(request):
     return render(request, 'staff/view_stocks.html', {'book_list': book_list})
 
 
-@csrf_exempt
+@permission_required('bookstore.change_stocklevel', raise_exception=True)
 def add_stock(request):
     print('add stock request callled.....')
     if request.method == 'POST':
@@ -243,6 +263,8 @@ def add_stock(request):
         return JsonResponse({'success': True})
 
 
+@login_required
+@permission_required('bookstore.change_stocklevel', raise_exception=True)
 def remove_stock(request):
     print('add stock request called.....')
     if request.method == 'POST':
@@ -257,14 +279,19 @@ def remove_stock(request):
             stock.save()
             return JsonResponse({'success': True})
         else:
+            print("Enter stock more than available stock...")
             return JsonResponse({'success': False})
 
 
+@login_required
+@permission_required('bookstore.delete_book', raise_exception=True)
 def remove_book_view(request):
     book_list = Book.objects.all()
     return render(request, 'staff/remove_book_view.html', {'book_list': book_list})
 
 
+@login_required
+@permission_required('bookstore.change_book', raise_exception=True)
 def apply_discount(request):
     if request.method == 'POST':
         try:

@@ -1,0 +1,30 @@
+{% extends 'staff/staff.html' %}
+
+{% block content %}
+
+<div id="notification">
+    <div id="notificationsPanel" class="notifications-panel">
+        <h2>Notifications</h2>
+        <ul>
+            {% if notifications %}
+            {% for notification in notifications %}
+            <li>
+                {{ notification.message }}
+                <div class="notification-actions">
+                    {% if notification.url %}
+                    <a href="{{ notification.url }}" class="notification-view">View</a>
+                    {% endif %}
+                    <a href="{% url 'users:mark_as_read' notification.id %}" class="notification-mark-read">Mark as
+                        read</a>
+                </div>
+            </li>
+            {% endfor %}
+            {% else %}
+            <p>No notification now</p>
+            {% endif %}
+
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

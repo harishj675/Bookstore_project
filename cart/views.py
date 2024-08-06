@@ -1,12 +1,13 @@
 from bookstore.models import Book
 from bookstore.models import StockLevel
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, reverse, redirect
+from users.models import Notifications
 from users.models import UserProfile
 
 from .models import Cart as UserCart, Order, OrderItems
@@ -58,16 +59,20 @@ def add_to_cart(request, book_id):
             return HttpResponseRedirect(reverse('book:home'))
 
 
+@login_required
 def remove_from_cart(request, cart_id):
     try:
         book_cart_item = UserCart.objects.get(pk=cart_id)
         book_cart_item.delete()
+        messages.success(request, 'book removed by cart')
     except UserCart.DoesNotExist:
-        return HttpResponseNotFound("Cart item not found.")
+        messages.error(request, 'cart item not found ')
+        print('error in removing book form a cart')
 
     return HttpResponseRedirect(reverse('cart:cart'))
 
 
+@login_required
 def view_cart(request):
     cart_list = UserCart.objects.filter(user_id=request.user.id)
     number_of_books = len(cart_list)
@@ -121,6 +126,7 @@ def decrease_qty(request, cart_id):
             return HttpResponseRedirect(reverse('cart:cart'))
 
 
+@login_required
 def create_order(request):
     cart_list = UserCart.objects.filter(user_id=request.user.id)
     total_order_amount = 0
@@ -145,7 +151,17 @@ def create_order(request):
         )
         order_item.save()
         item.delete()
+    # or create notification
+    staff = UserProfile.objects.get(roll='Staff')
+    user = User.objects.get(id=staff.user_id)
+    notification = Notifications.objects.create(
+        user=user,
+        message=f'new ordered created by the {request.user.first_name}',
+        url=reverse('cart:view_order_details', args=[order.id])
+    )
+    notification.save()
     print('order created successfully...')
+    messages.success(request, 'ordered created successfully.')
     return redirect('users:profile')
 
 
@@ -163,6 +179,7 @@ def cancel_order(request, order_id):
     order = Order.objects.get(pk=order_id)
     order.order_status = 'Cancelled'
     order.save()
+    messages.success(request, 'odered cancelled successfully.')
     return redirect('users:profile')
 
 
@@ -193,6 +210,7 @@ def view_order_details(request, order_details_id):
     return render(request, 'staff/order_details.html', context)
 
 
+@permission_required('cart.change_order', raise_exception=True)
 def update_order_status(request, order_id):
     order = Order.objects.get(pk=order_id)
     status = request.POST['order_status']
@@ -205,6 +223,23 @@ def update_order_status(request, order_id):
             book_stock_level.save()
     order.order_status = status
     order.save()
+    # sending notification to the user and manager
+    order_user = User.objects.get(pk=order.user_id)
+    notification = Notifications.objects.create(
+        user=order_user,
+        message=f"your order status changes current status is {order.order_status}",
+        url=reverse('users:profile')
+    )
+    notification.save()
+    if order.order_status == 'processing':
+        user_profile = UserProfile.objects.get(roll="Manager")
+        manager_user = User.objects.get(id=user_profile.user_id)
+        notification = Notifications.objects.create(
+            user=manager_user,
+            message=f'new order created by {order_user.first_name}',
+            url=reverse('cart:view_order_details', args=[order.id])
+        )
+        notification.save()
     messages.success(request, 'order status updated successfully.')
     return HttpResponseRedirect(reverse('cart:view_all_orders'))
 

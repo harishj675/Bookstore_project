@@ -13,7 +13,7 @@ urlpatterns = [
     path('update/', views.update_user, name='update_user'),
 
     path('staff/', views.staff_home, name='staff_home'),
-    path('manger/', views.manger_home, name='manger_home'),
+    path('manger/', views.staff_home, name='staff_home'),
 
     # password_changes
     path('change-password/',
@@ -33,4 +33,8 @@ urlpatterns = [
          name='password_reset_confirm'),
     path('reset/done/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'),
          name="password_reset_complete"),
+
+    # notifications
+    path('view_notifications/', views.view_notifications, name='view_notifications'),
+    path('<int:notification_id>/mark_as_read/', views.mark_as_read, name='mark_as_read')
 ]
