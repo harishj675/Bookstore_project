@@ -60,18 +60,47 @@ def profile(request):
     return render(request, 'user/profile.html', context)
 
 
+# def create_user(request):
+#     if request.method == 'POST':
+#         try:
+#             form = SignUpForm(request.POST)
+#             if form.is_valid():
+#                 user = form.save()
+#                 login(request, user)
+#                 messages.success(request, 'user created successfully and logged..')
+#                 return redirect('book:home')
+#         except Exception as e:
+#             print(f'Error in creating user {e}')
+#             messages.error(request, 'Error in creating user')
+#             return redirect('book:home')
+#     else:
+#         form = SignUpForm()
+#         return render(request, 'user/user_registration.html', {'form': form})
+
+
 def create_user(request):
     if request.method == 'POST':
-        try:
-            form = SignUpForm(request.POST)
-            if form.is_valid():
-                user = form.save()
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # create userprofile
+            user_profile = UserProfile.objects.create(
+                user=user,
+            )
+            user_profile.save()
+            # Authenticate the user with the backend
+            user = authenticate(username=user.username, password=form.cleaned_data['password1'],
+                                backend='django.contrib.auth.backends.ModelBackend')
+            if user is not None:
                 login(request, user)
-                messages.success(request, 'user created successfully and logged..')
+                messages.success(request, 'User created successfully and logged in.')
                 return redirect('book:home')
-        except Exception as e:
-            print(f'Error in creating user {e}')
-            messages.error('Error in creating user')
+            else:
+                messages.error(request, 'Authentication failed. Please try again.')
+                return redirect('book:home')
+        else:
+            messages.error(request, 'Invalid form submission. Please correct the errors below.')
+            return render(request, 'user/user_registration.html', {'form': form})
     else:
         form = SignUpForm()
         return render(request, 'user/user_registration.html', {'form': form})
