@@ -3,47 +3,47 @@
     <div id="logo">
         <a href="{% url 'book:home' %}"> <span>{% trans "Bookstore" %}</span></a>
     </div>
-    <form method="get" action="{% url 'book:search_book' %}">
-        <div id="search-div">
-            <input type="text" id="search" name="query" value="" placeholder="{% trans 'Search book' %}">
-        </div>
+    <form method="get" action="{% url 'book:search_book' %}" id="search-form">
+        <input type="text" id="search" name="query" value="" placeholder="{% trans 'Search book' %}">
         <button type="submit">{% trans "Search" %}</button>
     </form>
 
-    <div id="header-buttons">
+    <ul id="header-buttons">
         {% if user.is_authenticated %}
-        <a href="{% url 'users:profile' %}" class="button profile-icon">
+        <li><a href="{% url 'users:profile' %}" class="button profile-icon">
             <i class="fas fa-user"></i>{{ user }}
-        </a>
-        <a href="{% url 'cart:cart' %}" class="button cart-icon">
+        </a></li>
+        <li><a href="{% url 'cart:cart' %}" class="button cart-icon">
             <i class="fas fa-shopping-cart"></i> {% trans "My Cart" %}
             {% if cart_count > 0 %}
             <span class="cart-count">{{ cart_count }}</span>
             {% endif %}
-        </a>
-        <a href="{% url 'users:view_notifications' %}" id="notificationButton">
+        </a></li>
+        <li><a href="{% url 'users:view_notifications' %}" id="notificationButton" class="button notification-icon">
             <i class="fas fa-bell"></i>
             {% if count_of_unread_notifications > 0 %}
             <span class="notification-count">{{ count_of_unread_notifications }}</span>
             {% endif %}
-        </a>
-        <a href="{% url 'users:logout' %}" class="button logout-icon">
+        </a></li>
+        <li><a href="{% url 'users:logout' %}" class="button logout-icon">
             <i class="fas fa-sign-out-alt"></i> {% trans "Logout" %}
-        </a>
+        </a></li>
         {% else %}
-        <a href="{% url 'users:login' %}" class="button login-icon">
+        <li><a href="{% url 'users:login' %}" class="button login-icon">
             <i class="fas fa-sign-in-alt"></i> {% trans "Login" %}
-        </a>
-        <a href="{% url 'users:create_user' %}" class="button signup-icon">
+        </a></li>
+        <li><a href="{% url 'users:create_user' %}" class="button signup-icon">
             <i class="fas fa-user-plus"></i> {% trans "Sign Up" %}
-        </a>
+        </a></li>
         {% endif %}
 
-        <form method="get" action="{% url 'book:set_language' %}">
-            <select name="language" onchange="this.form.submit()">
-                <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>{% trans "English" %}</option>
-                <option value="es" {% if request.LANGUAGE_CODE == 'es' %}selected{% endif %}>{% trans "Español" %}</option>
-            </select>
-        </form>
-    </div>
+        <li>
+            <form method="get" action="{% url 'book:set_language' %}" id="language-form">
+                <select name="language" onchange="this.form.submit()">
+                    <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>{% trans "English" %}</option>
+                    <option value="es" {% if request.LANGUAGE_CODE == 'es' %}selected{% endif %}>{% trans "Español" %}</option>
+                </select>
+            </form>
+        </li>
+    </ul>
 </header>

@@ -3,13 +3,14 @@
 <link rel="stylesheet" href="{% static 'bookstore/css/smilier_books.css' %}">
 {% endblock %}
 <div id="similar-books">
+    {% for book in similar_books %}
     <div class="book-container">
         <div class="book-card">
-            <img src="https://marketplace.canva.com/EAFPHUaBrFc/1/0/1003w/canva-black-and-white-modern-alone-story-book-cover-QHBKwQnsgzs.jpg"
+            <img src="{{book.cover_img.url}}"
                  alt="Book Cover">
             <div class="book-info">
-                <p class="book-title">A Banquet of Philosophical and Devotional Hymns of Abhinavaguptacarya</p>
-                <p class="book-author">by Moti Lal Pandit (Author), Dev Publishers and Distributors (Publisher)</p>
+                <p class="book-title">{{book.title}}</p>
+                <p class="book-author">{{book.author}}</p>
                 <div class="book-rating">
                     <i class="fa fa-star"></i>
                     <i class="fa fa-star"></i>
@@ -18,64 +19,21 @@
                     <i class="fa fa-star-o"></i>
                 </div>
                 <div class="price-container">
-                    <p class="discount-price">₹795</p>
-                    <p class="original-price">₹995</p>
-                    <p class="discount-percentage">(20% Off)</p>
+                    <p class="discount-price">₹{{book.discounted_price}}</p>
+                    <p class="original-price">₹{{book.price}}</p>
+                    <p class="discount-percentage">({{book.discount}}% Off)</p>
                 </div>
-                <button class="add-to-cart-button">
-                    <i class="fa fa-shopping-cart"></i> Add to cart
-                </button>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart:add_to_cart' book.id %}" class="add-to-cart">
+                    <i class="fas fa-shopping-cart"></i> Add to cart
+                </a>
+                {% else %}
+                <a href="{% url 'users:login' %}" class="add-to-cart">
+                    <i class="fas fa-shopping-cart"></i> Login to add to cart
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
-    <div class="book-container">
-        <div class="book-card">
-            <img src="https://marketplace.canva.com/EAFPHUaBrFc/1/0/1003w/canva-black-and-white-modern-alone-story-book-cover-QHBKwQnsgzs.jpg"
-                 alt="Book Cover">
-            <div class="book-info">
-                <p class="book-title">A Banquet of Philosophical and Devotional Hymns of Abhinavaguptacarya</p>
-                <p class="book-author">by Moti Lal Pandit (Author), Dev Publishers and Distributors (Publisher)</p>
-                <div class="book-rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <div class="price-container">
-                    <p class="discount-price">₹795</p>
-                    <p class="original-price">₹995</p>
-                    <p class="discount-percentage">(20% Off)</p>
-                </div>
-                <button class="add-to-cart-button">
-                    <i class="fa fa-shopping-cart"></i> Add to cart
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="book-container">
-        <div class="book-card">
-            <img src="https://marketplace.canva.com/EAFPHUaBrFc/1/0/1003w/canva-black-and-white-modern-alone-story-book-cover-QHBKwQnsgzs.jpg"
-                 alt="Book Cover">
-            <div class="book-info">
-                <p class="book-title">A Banquet of Philosophical and Devotional Hymns of Abhinavaguptacarya</p>
-                <p class="book-author">by Moti Lal Pandit (Author), Dev Publishers and Distributors (Publisher)</p>
-                <div class="book-rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <div class="price-container">
-                    <p class="discount-price">₹795</p>
-                    <p class="original-price">₹995</p>
-                    <p class="discount-percentage">(20% Off)</p>
-                </div>
-                <button class="add-to-cart-button">
-                    <i class="fa fa-shopping-cart"></i> Add to cart
-                </button>
-            </div>
-        </div>
-    </div>
- </div>
+    {% endfor %}
+</div>

@@ -32,6 +32,7 @@
     <ul>
         <li><a href="{% url 'book:add_book' %}">Add Book</a></li>
         <li><a href="{% url 'book:staff_book_view'%}">View Books</a></li>
+        <li><a href="{% url 'book:view_review_details'%}">Books Review</a></li>
         {% if user_profile.roll == 'Manager' %}
         <li><a href="{% url 'book:remove_book_view' %}">Remove Book</a></li>
         <li><a href="{% url 'book:apply_discount' %}">Apply Discount</a></li>

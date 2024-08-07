@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.get_cart_count',
                 'users.context_processors.get_user_profile',
+                'users.context_processors.get_notification_count',
             ],
         },
     },

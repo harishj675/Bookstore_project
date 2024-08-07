@@ -1,10 +1,9 @@
-/* Book Detail Container */
 #book-detail-container {
     display: flex;
     align-items: flex-start;
     margin: 2rem auto;
     max-width: 1200px;
-    padding: 3rem;
+    padding: 2rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -30,9 +29,8 @@
 
 .book-tag {
     position: absolute;
-    top: 1rem;
+    top: -48px;
     left: -373px;
-    top:-48px;
     background: #f39c12;
     color: #fff;
     padding: 0.5rem 1rem;
@@ -44,7 +42,7 @@
 
 .book-title-main {
     display: block;
-    font-size: 1.9rem;
+    font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
@@ -61,7 +59,7 @@
 }
 
 .rating-stars {
-    color: #f39c12; /* Gold color for stars */
+    color: #f39c12;
     font-size: 1.2rem;
     margin-right: 0.5rem;
 }
@@ -73,7 +71,7 @@
 
 .book-price {
     font-size: 1.2rem;
-    color: #007bff; /* Price color */
+    color: #007bff;
     font-weight: bold;
     margin-bottom: 1rem;
 }
@@ -121,17 +119,18 @@
 
 .add-to-cart i {
     margin-right: 0.5rem;
-    font-size: 1.2rem; /* Adjust size as needed */
+    font-size: 1.2rem;
 }
 
 .add-to-cart:hover {
     background: #0056b3;
 }
+
 .reviews-and-specs {
     display: flex;
     gap: 2rem;
 }
-/* Product Container */
+
 .product-container {
     display: flex;
     flex-direction: column;
@@ -143,7 +142,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Product Detail Box */
 .product-detail-box {
     margin-bottom: 2rem;
 }
@@ -208,8 +206,6 @@
     color: #555;
 }
 
-
-/* Reviews Container */
 .reviews-container {
     flex: 1;
     border: 1px solid #ddd;
@@ -218,7 +214,6 @@
     background: #f9f9f9;
 }
 
-/* Reviews Title */
 .reviews-title {
     font-size: 1.5rem;
     font-weight: bold;
@@ -226,7 +221,6 @@
     color: #333;
 }
 
-/* Review Rating Section */
 .review-rating {
     margin-bottom: 1.5rem;
 }
@@ -253,7 +247,6 @@
     flex-direction: column;
 }
 
-/* Rating Progress Bar */
 .rating-progress-bar {
     display: flex;
     align-items: center;
@@ -261,8 +254,6 @@
     position: relative;
 }
 
-
-/* Progress Fill */
 .progress-fill {
     background: #007bff;
     height: 20px;
@@ -272,12 +263,10 @@
     width: 100%;
 }
 
-/* Zero width for empty progress bars */
 .progress-fill.zero {
     background: #e0e0e0;
 }
 
-/* Progress Label */
 .progress-label {
     position: absolute;
     right: 0;
@@ -287,8 +276,6 @@
     font-size: 0.9rem;
 }
 
-
-/* Write Review Button */
 .write-review-button {
     margin-top: 1.5rem;
     text-align: center;
@@ -313,17 +300,8 @@
     color: #939393;
 }
 
-.reviews-iframe {
-    margin-top: 1rem;
-}
-
-iframe {
-    border-radius: 8px;
-}
-
-/* Modal Background */
 .modal {
-    display: column;
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -331,77 +309,99 @@ iframe {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease;
 }
 
-/* Modal Content */
 .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
+    background-color: #fff;
+    margin: 15% auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
     border-radius: 8px;
-    display: column;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease;
 }
 
-/* Close Button */
 .close {
     color: #aaa;
     float: right;
-    font-size: 28px;
+    font-size: 1.5rem;
     font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: #000;
     text-decoration: none;
-    cursor: pointer;
 }
 
-/* Form Group */
+h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
 }
 
-.form-group label {
+label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0.5rem;
     font-weight: bold;
+    color: #333;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 1rem;
 }
 
-.form-group input,
-.form-group textarea {
-    width: 100px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Ensures padding and border are included in the width */
+textarea {
+    resize: vertical;
 }
 
-.form-group textarea {
-    resize: vertical; /* Allows vertical resizing only */
-}
-
-/* Submit Button */
 button[type="submit"] {
     background-color: #007bff;
-    color: white;
+    color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 0.75rem 1.5rem;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s;
-    display: block;
-    margin-top: 15px;
+    transition: background-color 0.3s ease;
 }
 
 button[type="submit"]:hover {
     background-color: #0056b3;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.reviews-container {
+    padding: 20px;
+}
+
+.user-reviews {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
 }
 

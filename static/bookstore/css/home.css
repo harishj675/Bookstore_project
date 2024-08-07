@@ -1,4 +1,4 @@
-#books-container{
+#books-container {
     width: 100%;
     height: auto;
     display: flex;
@@ -7,12 +7,11 @@
     padding: 20px;
 }
 
-#filters{
+#filters {
     width: 20%;
-    height:auto; 
+    height: auto;
     border-right: 1px solid gray;
 }
-
 
 .book-card {
     background: #fff;
@@ -20,10 +19,13 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 250px; 
+    width: 300px; /* Fixed width */
+    height: 600px; /* Fixed height */
     text-align: center;
     margin: 1rem;
     transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column; /* Ensures that children elements stack vertically */
 }
 
 .book-card:hover {
@@ -33,7 +35,7 @@
 
 .img-container {
     width: 100%;
-    height: 300px; 
+    height: 400px; /* Fixed height for the image container */
     overflow: hidden;
 }
 
@@ -46,6 +48,9 @@
 
 .book-details {
     padding: 1rem;
+    flex: 1; /* Ensures it takes up remaining space */
+    display: flex;
+    flex-direction: column; /* Stacks children elements vertically */
 }
 
 .book-title {
@@ -59,6 +64,7 @@
     font-size: 0.9rem;
     color: #555;
     margin-bottom: 0.5rem;
+    flex: 1; /* Allows description to grow and fill space if needed */
 }
 
 .book-genre {
@@ -69,7 +75,7 @@
 
 .book-price {
     font-size: 1.2rem;
-    color: #007bff; 
+    color: #007bff;
     font-weight: bold;
     margin-top: 0.5rem;
 }
@@ -88,8 +94,9 @@
 .add-to-cart:hover {
     background: #0056b3;
 }
-a{
-  text-decoration: none;
+
+a {
+    text-decoration: none;
 }
 
 .price-container {
@@ -97,7 +104,7 @@ a{
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
-    margin-top:20px
+    margin-top: 20px;
 }
 
 .discount-price {

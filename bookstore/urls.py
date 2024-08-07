@@ -8,7 +8,7 @@ urlpatterns = [
     path('book/search/', views.book_search, name='search_book'),
     path('book/<int:book_id>/details/', views.book_details, name='details_book'),
     path('set_language/', views.set_language, name='set_language'),
-    # path('<char:book_categories>/book_category', views.book_categories, name='book_category')
+    path('<int:book_id>/add_book_review/', views.book_review, name='add_book_review'),
 
     # staff urls
     path('book/add/', views.book_add, name='add_book'),
@@ -21,4 +21,7 @@ urlpatterns = [
     path('staff/remove_stock', views.remove_stock, name='remove_stock'),
     path('staff/apply_discount', views.apply_discount, name='apply_discount'),
     path('remove_book_view/', views.remove_book_view, name='remove_book_view'),
+    path('staff/view_review_details', views.view_review_details, name='view_review_details'),
+    path('staff/<int:rating_id>/delete_book_review', views.delete_book_review, name='delete_book_review'),
+    path('staff/<int:rating_id>/publish_book_review', views.publish_book_review, name='publish_book_review'),
 ]

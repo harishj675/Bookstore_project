@@ -1,16 +1,21 @@
 {% extends 'Layouts/base.html' %}
 
 {% block content %}
+{% block page_css %}
+{% load static%}
+<link rel="stylesheet" href="{% static 'bookstore/css/detail.css' %}">
+{% endblock %}
 {% if book %}
+
 <div id="book-detail-container">
     <div class="book-img">
         <img src="{{book.cover_img.url}}"
              alt="Book Cover">
     </div>
     <div id="book-info">
-        {% if book_specifications.book_tag != "normal" %}
-        <div class="book-tag">{{book_specifications.book_tag}}</div>
-        {% endif %}
+<!--        {% if book_specifications.book_tag != "normal" %}-->
+<!--        <div class="book-tag">{{book_specifications.book_tag}}</div>-->
+<!--        {% endif %}-->
         <p class="book-title-main">{{book.title}}</p>
         <p class="book-author-main">{{book.author}}</p>
         <div class="book-rating-main">
@@ -29,13 +34,19 @@
             <span id="qty">1</span>
             <button class="qty-btn" id="increase-qty"><i class="fas fa-plus"></i></button>
         </div>
+        {% if user.is_authenticated %}
         <button class="add-to-cart">
             <i class="fas fa-shopping-cart"></i> Add to cart
         </button>
+        {% else %}
+        <a href="{% url 'users:login' %}" class="add-to-cart">
+            <i class="fas fa-shopping-cart"></i> Login to add to cart
+        </a>
+        {% endif %}
     </div>
 </div>
 {% endif %}
-{% include 'bookstore/smilier_books.html'%}
+{% include 'bookstore/smilier_books.html' with similar_books=similar_book_list %}
 <div class="product-container">
     <div class="product-detail-box">
         <div class="product-specifications">
@@ -106,10 +117,25 @@
                 <button><i class="fas fa-pencil-alt"></i> Write your review</button>
             </div>
         </div>
-        <div class="reviews-iframe">
-            <iframe src="https://www.goodreads.com/api/reviews_widget_iframe?did=DEVELOPER_ID&amp;format=html&amp;header_text=Reviews+on+GoodReads&amp;isbn=9789394852198&amp;links=660&amp;min_rating=3&amp;num_reviews=5&amp;review_back=ffffff&amp;stars=000000&amp;stylesheet=https://filehost.sapnaonline.com/v2/static/css/goodreads.css?q=9"
-                    width="100%" height="450" frameborder="0"></iframe>
+        <div class="reviews-container">
+            <!-- Display Book Ratings from Context -->
+            <div class="user-reviews">
+                <h4>Reviews</h4>
+                {% if ratings_list %}
+                <div class="rating-list">
+                    {% for rating in ratings_list %}
+                    <div class="rating-item">
+                        <h5>{{ rating.review_title }}</h5>
+                        <p>{{ rating.review_text }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No reviews available.</p>
+                {% endif %}
+            </div>
         </div>
+
     </div>
 </div>
 <!-- Modal for Writing a Review -->
@@ -117,7 +143,8 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Write a Review</h2>
-        <form id="review-form">
+        <form id="review-form" method="post" action="{% url 'book:add_book_review' book.id %}">
+            {% csrf_token %}
             <div class="form-group">
                 <label for="review-title">Review Title:</label>
                 <input type="text" id="review-title" name="review-title" required>
@@ -132,7 +159,6 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Quantity Controls
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
         const qtySpan = document.getElementById('qty');
@@ -174,91 +200,29 @@
             });
         });
 
-        // Modal Controls
         const reviewModal = document.getElementById('review-modal');
         const openModalBtn = document.querySelector('.write-review-button button');
         const closeModalSpan = document.querySelector('.modal .close');
         const reviewForm = document.getElementById('review-form');
 
-        // Open the modal
         openModalBtn.addEventListener('click', function() {
             reviewModal.style.display = 'block';
         });
 
-        // Close the modal
+
         closeModalSpan.addEventListener('click', function() {
             reviewModal.style.display = 'none';
         });
 
-        // Close the modal when clicking outside of the modal
+
         window.addEventListener('click', function(event) {
             if (event.target === reviewModal) {
                 reviewModal.style.display = 'none';
             }
         });
 
-        // Handle form submission
-        reviewForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            // Collect form data
-            const title = document.getElementById('review-title').value;
-            const content = document.getElementById('review-content').value;
-
-            // Here you can add logic to send form data to the server
-
-            // Close the modal
-            reviewModal.style.display = 'none';
-
-            // Optionally, you could also clear the form inputs
-            reviewForm.reset();
-        });
     });
 </script>
 
-
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function() {-->
-<!--        const decreaseBtn = document.getElementById('decrease-qty');-->
-<!--        const increaseBtn = document.getElementById('increase-qty');-->
-<!--        const qtySpan = document.getElementById('qty');-->
-<!--        const addToCartBtn = document.querySelector('.add-to-cart');-->
-<!--        const bookId = "{{ book.id }}";-->
-
-<!--        let quantity = 1;-->
-
-<!--        function updateQuantity(newQty) {-->
-<!--            if (newQty < 1) newQty = 1;-->
-<!--            quantity = newQty;-->
-<!--            qtySpan.textContent = quantity;-->
-<!--        }-->
-
-<!--        decreaseBtn.addEventListener('click', function() {-->
-<!--            updateQuantity(quantity - 1);-->
-<!--        });-->
-
-<!--        increaseBtn.addEventListener('click', function() {-->
-<!--            updateQuantity(quantity + 1);-->
-<!--        });-->
-
-<!--        addToCartBtn.addEventListener('click', function() {-->
-<!--            const url = `{% url 'cart:add_to_cart' book.id %}?quantity=${quantity}`;-->
-
-<!--            fetch(url, {-->
-<!--                method: 'GET',-->
-<!--            })-->
-<!--            .then(response => response.json())-->
-<!--            .then(result => {-->
-<!--                if (result.success) {-->
-<!--                    alert('Added to cart successfully!');-->
-<!--                } else {-->
-<!--                    alert('Error adding to cart.');-->
-<!--                }-->
-<!--            })-->
-<!--            .catch(error => {-->
-<!--                console.error('Error:', error);-->
-<!--            });-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
 
 {% endblock %}

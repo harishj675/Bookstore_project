@@ -46,6 +46,7 @@ class StockLevel(models.Model):
 class Rating(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
+    rating = models.DecimalField(null=True, blank=True, default=3, max_digits=10, decimal_places=2)
     review_title = models.CharField()
     review_text = models.TextField()
+    is_published = models.BooleanField(default=False, null=True, blank=True)

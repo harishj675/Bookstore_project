@@ -1,0 +1,43 @@
+{% extends 'staff/staff.html' %}
+
+{% block content %}
+<div id="orders_view">
+    <h1>Review List</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Review ID</th>
+            <th>User Details</th>
+            <th>Book Title</th>
+            <th>Book Author</th>
+            <th>Review Title</th>
+            <th>Review Content</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rating in review_list %}
+        <tr>
+            <td>{{ rating.id }}</td>
+            <td>{{ rating.user__first_name }} {{rating.user__last_name}}</td>
+            <td>{{ rating.book__title }}</td>
+            <td>{{ rating.book__author }}</td>
+            <td>{{ rating.review_title }}</td>
+            <td>{{ rating.review_text }}</td>
+            <td>
+                {% if not rating.is_published %}
+                <a href="{% url 'book:publish_book_review' rating.id %}" class="btn-view-details">Publish</a>
+                {% endif %}
+                <a href="{% url 'book:delete_book_review' rating.id %}" class="btn-view-details">Remove</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No orders available.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

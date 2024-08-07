@@ -7,12 +7,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F, ExpressionWrapper, FloatField
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.shortcuts import reverse ,redirect
+from django.shortcuts import reverse, redirect
 from django.utils.translation import activate
-from users.models import UserProfile
+from users.models import UserProfile, Notifications, User
 
 from .forms import BookAddForm, BookAddMoreInfo
-from .models import Book, BookSpecifications, StockLevel
+from .models import Book, BookSpecifications, StockLevel, Rating
 
 
 def index(request):
@@ -57,20 +57,71 @@ def book_search(request):
 
 @login_required
 def book_review(request, book_id):
-    pass
+    print(request.method)
+    print(request.POST)
+    if request.method == 'POST':
+        print('book_review method called.')
+        try:
+            title = request.POST['review-title']
+            review_content = request.POST['review-content']
+            book = get_object_or_404(Book, pk=book_id)
+            review = Rating.objects.create(
+                review_title=title,
+                review_text=review_content,
+                book=book,
+                user=request.user,
+            )
+            print("created review details....")
+            print(review)
+            review.save()
+            # creating notification for staff user to
+            user_profile = UserProfile.objects.get(roll='Staff')
+            notify_user = User.objects.get(pk=user_profile.user_id)
+            notification = Notifications.objects.create(
+                user=notify_user,
+                message=f'New review added for book {book.title}',
+                url=reverse('book:view_review_details')
+            )
+            notification.save()
+            messages.success(request, 'book review added successfully..')
+            return HttpResponseRedirect(reverse('book:details_book', kwargs={'book_id': book_id}))
+        except Exception as e:
+            print(f"Error in adding review {e}")
+            messages.error(request, 'book review not added')
+            return HttpResponseRedirect(reverse('book:details_book', kwargs={'book_id': book_id}))
+
+
+def view_review_details(request):
+    rating = Rating.objects.filter(is_published=False)
+    ratings_info = Rating.objects.prefetch_related('book', 'user').values('book__title', 'book__author', 'review_title',
+                                                                          'review_text', 'is_published', 'id',
+                                                                          'user__first_name',
+                                                                          'user__last_name')
+    print(ratings_info)
+    return render(request, 'staff/review_details.html', {'review_list': ratings_info})
 
 
 def book_details(request, book_id):
     try:
         book = get_object_or_404(Book, pk=book_id)
+        rating_list = Rating.objects.filter(book_id=book_id, is_published=True)
+
         try:
+            # similar_book_list = Book.objects.exclude(id=book_id)
+            similar_book_list = Book.objects.exclude(id=book_id).annotate(
+                discounted_price=ExpressionWrapper(
+                    F('price') * (1 - F('discount') * 0.01),
+                    output_field=FloatField()
+                ))
             book_specifications = BookSpecifications.objects.get(book_id=book_id)
         except BookSpecifications.DoesNotExist:
             book_specifications = None
 
         context = {
             'book': book,
-            'book_specifications': book_specifications
+            'book_specifications': book_specifications,
+            'similar_book_list': similar_book_list[:3],
+            'ratings_list': rating_list
         }
         return render(request, 'bookstore/detail.html', context)
 
@@ -319,3 +370,28 @@ def set_language(request):
     response = redirect(request.META.get('HTTP_REFERER', '/'))
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
     return response
+
+
+def delete_book_review(request, rating_id):
+    try:
+        rating = get_object_or_404(Rating, pk=rating_id)
+        rating.delete()
+        messages.success(request, 'book review deleted successfully.')
+        return HttpResponseRedirect(reverse('book:view_review_details'))
+    except Exception as e:
+        print("Error in deleting book review")
+        messages.error(request, 'Error in deleting book.', e)
+        return HttpResponseRedirect(reverse('book:view_review_details'))
+
+
+def publish_book_review(request, rating_id):
+    try:
+        rating = get_object_or_404(Rating, pk=rating_id)
+        rating.is_published = True
+        rating.save()
+        messages.success(request, 'book review published successfully.')
+        return HttpResponseRedirect(reverse('book:view_review_details'))
+    except Exception as e:
+        print("Error in publishing  book review", e)
+        messages.error(request, 'Error in publishing book.')
+        return HttpResponseRedirect(reverse('book:view_review_details'))
