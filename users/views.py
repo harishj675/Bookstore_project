@@ -129,13 +129,11 @@ def create_user(request):
 
 def login_user(request):
     if request.method == "POST":
-        print("login method called...")
-        print(request.POST)
+
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            print("user authenticate successfully....")
             login(request, user)
             messages.success(request, 'you logged successfully...')
             user_profile = UserProfile.objects.get(user_id=request.user.id)
