@@ -27,4 +27,4 @@ class Notifications(models.Model):
     message = models.TextField()
     url = models.URLField(null=True, blank=True)
     is_read = models.URLField(default=False)
-    timestamp = models.DateTimeField(default=timezone.now())
+    timestamp = models.DateTimeField(default=timezone.now)

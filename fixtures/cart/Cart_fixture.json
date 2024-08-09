@@ -1,0 +1,13 @@
+[
+    {
+        "model": "cart.cart",
+        "pk": 40,
+        "fields": {
+            "book": 4,
+            "user": 6,
+            "quantity": 1,
+            "total_price_original": 299,
+            "discounted_price": "239.20"
+        }
+    }
+]

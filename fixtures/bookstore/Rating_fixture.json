@@ -1,0 +1,14 @@
+[
+    {
+        "model": "bookstore.rating",
+        "pk": 5,
+        "fields": {
+            "book": 4,
+            "user": 6,
+            "rating": "3.00",
+            "review_title": "Inspiring and Insightful: A Journey in Gaming Entrepreneurship",
+            "review_text": "A captivating journey of entrepreneurship with humor and practical insights.\"",
+            "is_published": true
+        }
+    }
+]

@@ -1,0 +1,46 @@
+[
+    {
+        "model": "bookstore.stocklevel",
+        "pk": 1,
+        "fields": {
+            "book": 1,
+            "stock_quantity": 100,
+            "remaining_quantity": 74,
+            "sell_quantity": 6,
+            "updated_at": "2024-08-06T06:58:35.397Z"
+        }
+    },
+    {
+        "model": "bookstore.stocklevel",
+        "pk": 2,
+        "fields": {
+            "book": 2,
+            "stock_quantity": 20,
+            "remaining_quantity": 16,
+            "sell_quantity": 4,
+            "updated_at": "2024-08-06T06:58:35.386Z"
+        }
+    },
+    {
+        "model": "bookstore.stocklevel",
+        "pk": 3,
+        "fields": {
+            "book": 3,
+            "stock_quantity": 40,
+            "remaining_quantity": 40,
+            "sell_quantity": 0,
+            "updated_at": "2024-08-05T06:44:59.588Z"
+        }
+    },
+    {
+        "model": "bookstore.stocklevel",
+        "pk": 4,
+        "fields": {
+            "book": 4,
+            "stock_quantity": 40,
+            "remaining_quantity": 40,
+            "sell_quantity": 0,
+            "updated_at": "2024-08-05T06:44:50.237Z"
+        }
+    }
+]

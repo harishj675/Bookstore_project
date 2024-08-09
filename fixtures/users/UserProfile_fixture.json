@@ -1,0 +1,46 @@
+[
+    {
+        "model": "users.userprofile",
+        "pk": 4,
+        "fields": {
+            "user": 6,
+            "roll": "User",
+            "address": "Pune",
+            "mobile_number": "12345678",
+            "pincode": 414232
+        }
+    },
+    {
+        "model": "users.userprofile",
+        "pk": 6,
+        "fields": {
+            "user": 7,
+            "roll": "Manager",
+            "address": null,
+            "mobile_number": "1234567",
+            "pincode": null
+        }
+    },
+    {
+        "model": "users.userprofile",
+        "pk": 7,
+        "fields": {
+            "user": 9,
+            "roll": "Staff",
+            "address": null,
+            "mobile_number": null,
+            "pincode": null
+        }
+    },
+    {
+        "model": "users.userprofile",
+        "pk": 8,
+        "fields": {
+            "user": 16,
+            "roll": "User",
+            "address": null,
+            "mobile_number": null,
+            "pincode": null
+        }
+    }
+]

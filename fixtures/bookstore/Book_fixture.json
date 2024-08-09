@@ -1,0 +1,54 @@
+[
+    {
+        "model": "bookstore.book",
+        "pk": 1,
+        "fields": {
+            "title": "Doglapan: The Hard Truth about Life and Start-Ups",
+            "author": "Ashneer Grover",
+            "price": "499.00",
+            "discount": 20,
+            "quantity": 100,
+            "genre": "Biography",
+            "cover_img": "books/images/book-3.jpg"
+        }
+    },
+    {
+        "model": "bookstore.book",
+        "pk": 2,
+        "fields": {
+            "title": "Don't believe everything you think",
+            "author": "Joseph Nguyen",
+            "price": "299.00",
+            "discount": 10,
+            "quantity": 20,
+            "genre": "Fiction",
+            "cover_img": "books/images/book-4.jpg"
+        }
+    },
+    {
+        "model": "bookstore.book",
+        "pk": 3,
+        "fields": {
+            "title": "Why Bharat Matters",
+            "author": "S. Jaishankar",
+            "price": "695.00",
+            "discount": 20,
+            "quantity": 10,
+            "genre": "Regional  national history",
+            "cover_img": "books/images/book-5.jpg"
+        }
+    },
+    {
+        "model": "bookstore.book",
+        "pk": 4,
+        "fields": {
+            "title": "Getting Dressed and Parking Cars: The Magical Story of Building a Gaming Company",
+            "author": "Kejriwal, Alok",
+            "price": "299.00",
+            "discount": 20,
+            "quantity": 20,
+            "genre": "Business & Economics , Business & management , Entrepreneurship",
+            "cover_img": "books/images/book6.jpg"
+        }
+    }
+]

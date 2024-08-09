@@ -1,0 +1,266 @@
+[
+    {
+        "model": "users.notifications",
+        "pk": 1,
+        "fields": {
+            "user": 9,
+            "message": "new ordered created by the Harish",
+            "url": "/cart/staff/16/view_order_details",
+            "is_read": "True",
+            "timestamp": "2024-08-05T19:07:36.451Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 2,
+        "fields": {
+            "user": 9,
+            "message": "new ordered created by the Harish",
+            "url": "/cart/staff/17/view_order_details",
+            "is_read": "True",
+            "timestamp": "2024-08-05T19:07:36.451Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 3,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T04:57:02.263Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 4,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T04:58:04.675Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 5,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T04:58:04.675Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 6,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T04:59:32.720Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 7,
+        "fields": {
+            "user": 7,
+            "message": "new order created by Harish",
+            "url": "/cart/staff/17/view_order_details",
+            "is_read": "False",
+            "timestamp": "2024-08-06T04:59:32.720Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 8,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes shipped",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T05:00:59.661Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 9,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T05:07:50.068Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 10,
+        "fields": {
+            "user": 7,
+            "message": "new order created by Harish",
+            "url": "/cart/staff/17/view_order_details",
+            "is_read": "False",
+            "timestamp": "2024-08-06T05:07:50.068Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 11,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes current processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T05:55:47.805Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 12,
+        "fields": {
+            "user": 7,
+            "message": "new order created by Harish",
+            "url": "/cart/staff/17/view_order_details",
+            "is_read": "False",
+            "timestamp": "2024-08-06T05:55:47.805Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 13,
+        "fields": {
+            "user": 9,
+            "message": "new ordered created by the Harish",
+            "url": "/cart/staff/18/view_order_details",
+            "is_read": "True",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 14,
+        "fields": {
+            "user": 9,
+            "message": "new ordered created by the Harish",
+            "url": "/cart/staff/19/view_order_details",
+            "is_read": "True",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 15,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes current status is processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 16,
+        "fields": {
+            "user": 7,
+            "message": "new order created by Harish",
+            "url": "/cart/staff/18/view_order_details",
+            "is_read": "False",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 17,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes current status is processing",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 18,
+        "fields": {
+            "user": 7,
+            "message": "new order created by Harish",
+            "url": "/cart/staff/19/view_order_details",
+            "is_read": "False",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 19,
+        "fields": {
+            "user": 6,
+            "message": "your order status changes current status is shipped",
+            "url": "/users/",
+            "is_read": "True",
+            "timestamp": "2024-08-06T06:53:37.726Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 20,
+        "fields": {
+            "user": 9,
+            "message": "new ordered created by the Harish",
+            "url": "/cart/staff/20/view_order_details",
+            "is_read": "True",
+            "timestamp": "2024-08-07T03:53:43.181Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 21,
+        "fields": {
+            "user": 9,
+            "message": "New review added for book Why Bharat Matters",
+            "url": "/staff/view_review_details",
+            "is_read": "True",
+            "timestamp": "2024-08-07T05:51:09.306Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 22,
+        "fields": {
+            "user": 9,
+            "message": "New review added for book Why Bharat Matters",
+            "url": "/staff/view_review_details",
+            "is_read": "True",
+            "timestamp": "2024-08-07T05:52:53.030Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 23,
+        "fields": {
+            "user": 9,
+            "message": "New review added for book Getting Dressed and Parking Cars: The Magical Story of Building a Gaming Company",
+            "url": "/staff/view_review_details",
+            "is_read": "True",
+            "timestamp": "2024-08-07T06:37:01.804Z"
+        }
+    },
+    {
+        "model": "users.notifications",
+        "pk": 24,
+        "fields": {
+            "user": 9,
+            "message": "New review added for book Getting Dressed and Parking Cars: The Magical Story of Building a Gaming Company",
+            "url": "/staff/view_review_details",
+            "is_read": "False",
+            "timestamp": "2024-08-07T08:36:52.074Z"
+        }
+    }
+]
