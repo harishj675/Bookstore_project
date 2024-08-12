@@ -16,16 +16,16 @@
         </tr>
         </thead>
         <tbody>
-        {% for book in book_list %}
+        {% for stock in stock_list %}
         <tr>
-            <td>{{ book.id }}</td>
-            <td>{{ book.title }}</td>
-            <td>₹{{ book.price }}</td>
-            <td>{{ book.stock_quantity }}</td>
-            <td>{{ book.remaining_quantity }}</td>
-            <td>{{ book.update|date:"M d, Y H:i" }}</td>
+            <td>{{ stock.book.id }}</td>
+            <td>{{ stock.book.title }}</td>
+            <td>₹{{ stock.book.price }}</td>
+            <td>{{ stock.stock_quantity }}</td>
+            <td>{{ stock.remaining_quantity }}</td>
+            <td>{{ stock.updated_at|date:"M d, Y H:i" }}</td>
             <td>
-                <button class="btn btn-add-stock" data-book-id="{{ book.id }}"> Add/Remove Stock</button>
+                <button class="btn btn-add-stock" data-book-id="{{ stock.book.id }}"> Add/Remove Stock</button>
             </td>
         </tr>
         {% empty %}

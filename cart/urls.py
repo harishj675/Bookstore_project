@@ -4,7 +4,6 @@ from . import views
 
 app_name = 'cart'
 urlpatterns = [
-    # path('', views.view_cart, name='cart'),
     path('', views.ViewCart.as_view(), name='cart'),
     path('<int:book_id>/add/', views.add_to_cart, name='add_to_cart'),
     path('<int:cart_id>/remove/', views.remove_from_cart, name='remove_from_cart'),
@@ -15,11 +14,9 @@ urlpatterns = [
 
     # staff urls
     path('staff/view_order', views.view_orders, name='view_all_orders'),
-    # path('staff/<int:order_details_id>/view_order_details', views.view_order_details, name='view_order_details'),
     path('staff/<int:pk>/view_order_details', views.ViewOrderDetails.as_view(),
          name='view_order_details'),
     path('staff/<int:order_id>/update_order_status', views.update_order_status, name='update_order_status'),
-    path('staff/completed_orders ', views.completed_orders, name='completed_orders'),
     path('staff/change_order_status ', views.change_order_status, name='change_order_status'),
     path('staff/completed_orders_list', views.completed_orders_list, name='completed_orders_list'),
 

@@ -5,9 +5,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F, ExpressionWrapper, FloatField
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import reverse, redirect
+from django.shortcuts import render, get_object_or_404, reverse, redirect
 from django.utils.translation import activate
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -49,23 +49,8 @@ class IndexView(ListView):
 
 def book_search(request):
     query = request.GET['query']
-    books_by_title = Book.objects.filter(title__icontains=query)
-    books_by_author = Book.objects.filter(author__icontains=query)
-    book_list = []
-    book_id_list = []
-    for book in books_by_title:
-        if book.id in book_id_list:
-            continue
-        else:
-            book_list.append(book)
-            book_id_list.append(book.id)
-    for book in books_by_author:
-        if book.id in book_id_list:
-            continue
-        else:
-            book_list.append(book)
-            book_id_list.append(book.id)
-
+    query_to_execute = Q(title__icontains=query) | Q(author__icontains=query)
+    book_list = Book.objects.filter(query_to_execute).distinct()
     return render(request, 'bookstore/home.html', {'book_list': book_list})
 
 
@@ -83,8 +68,6 @@ def book_review(request, book_id):
                 book=book,
                 user=request.user,
             )
-            print("created review details....")
-            print(review)
             review.save()
             # creating notification for staff user to
             user_profile = UserProfile.objects.get(roll='Staff')
@@ -109,35 +92,7 @@ def view_review_details(request):
                                                                           'review_text', 'is_published', 'id',
                                                                           'user__first_name',
                                                                           'user__last_name')
-    print(ratings_info)
     return render(request, 'staff/review_details.html', {'review_list': ratings_info})
-
-
-# def book_details(request, book_id):
-#     try:
-#         book = get_object_or_404(Book, pk=book_id)
-#         rating_list = Rating.objects.filter(book_id=book_id, is_published=True)
-#
-#         try:
-#             similar_book_list = Book.objects.exclude(id=book_id).annotate(
-#                 discounted_price=ExpressionWrapper(
-#                     F('price') * (1 - F('discount') * 0.01),
-#                     output_field=FloatField()
-#                 ))
-#             book_specifications = BookSpecifications.objects.get(book_id=book_id)
-#         except BookSpecifications.DoesNotExist:
-#             book_specifications = None
-#
-#         context = {
-#             'book': book,
-#             'book_specifications': book_specifications,
-#             'similar_book_list': similar_book_list[:3],
-#             'ratings_list': rating_list
-#         }
-#         return render(request, 'bookstore/detail.html', context)
-#
-#     except Exception as e:
-#         return HttpResponse(f'An error occurred: {e}', status=500)
 
 
 class BookDetailsView(DetailView):
@@ -158,10 +113,6 @@ class BookDetailsView(DetailView):
         return context
 
 
-def book_categories(request, book_categories):
-    pass
-
-
 # staff views
 @login_required
 @permission_required('bookstore.add_book', raise_exception=True)
@@ -174,7 +125,6 @@ def book_add(request):
             discount = request.POST['discount']
             quantity = request.POST['quantity']
             genre = request.POST['genre']
-
             cover_img = request.FILES['cover_img']
 
             # Create book and add to book table
@@ -306,33 +256,16 @@ def book_update(request, book_id):
         return render(request, 'bookstore/update_book.html', {'form': form, 'book_id': book_id})
 
 
-# def view_book(request):
-#     book_list = Book.objects.all()
-#     return render(request, 'staff/view_books.html', {'book_list': book_list})
-
 class ViewBook(ListView):
     model = Book
     context_object_name = 'book_list'
     template_name = 'staff/view_books.html'
 
 
-def view_stock(request):
-    books = Book.objects.prefetch_related('stocklevel_set').all()
-    book_list = []
-
-    for b in books:
-        book = {}
-        book['id'] = b.id
-        book['title'] = b.title
-        book['book_id'] = b.id
-        book['price'] = b.price
-        for stock in b.stocklevel_set.all():
-            book['stock_quantity'] = stock.stock_quantity
-            book['remaining_quantity'] = stock.remaining_quantity
-            book['update'] = stock.updated_at
-        book_list.append(book)
-
-    return render(request, 'staff/view_stocks.html', {'book_list': book_list})
+class ViewStock(ListView):
+    queryset = StockLevel.objects.select_related('book')
+    template_name = 'staff/view_stocks.html'
+    context_object_name = 'stock_list'
 
 
 @permission_required('bookstore.change_stocklevel', raise_exception=True)

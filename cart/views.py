@@ -44,7 +44,6 @@ def add_to_cart(request, book_id):
             return HttpResponseRedirect(reverse('book:home'))
 
     else:
-        print("Book_id in add to book__", book_id)
         book = get_object_or_404(Book, pk=book_id)
         user = get_object_or_404(User, pk=request.user.id)
         cart = UserCart.objects.create(
@@ -155,20 +154,14 @@ def decrease_qty(request, cart_id):
 @login_required
 def create_order(request):
     cart_list = UserCart.objects.filter(user_id=request.user.id)
-    total_order_amount = 0
-    discounted_price = 0
-
-    for item in cart_list:
-        total_order_amount = total_order_amount + item.total_price_original
-        discounted_price = discounted_price + item.discounted_price
+    total_discounted_price = UserCart.objects.aggregate(discount=Sum(F('discounted_price')))['discount'] or 0
 
     order = Order.objects.create(
-        order_total_amount=discounted_price,
+        order_total_amount=total_discounted_price,
         user=request.user,
         numbers_of_items=len(cart_list)
     )
     order.save()
-
     for item in cart_list:
         order_item = OrderItems.objects.create(
             order=order,
@@ -177,7 +170,7 @@ def create_order(request):
         )
         order_item.save()
         item.delete()
-    # or create notification
+
     staff = UserProfile.objects.get(roll='Staff')
     user = User.objects.get(id=staff.user_id)
     notification = Notifications.objects.create(
@@ -207,21 +200,6 @@ def cancel_order(request, order_id):
     order.save()
     messages.success(request, 'odered cancelled successfully.')
     return redirect('users:profile')
-
-
-# def view_order_details(request, order_details_id):
-#     order = Order.objects.get(pk=order_details_id)
-#     order_details_list = OrderItems.objects.filter(order_id=order_details_id).select_related('book').all().annotate(
-#         total_price=F('book__price') * F('quantity'))
-#     customer = User.objects.filter(id=order.user_id).select_related('userprofile')
-#
-#     context = {
-#         'order_details_list': order_details_list,
-#         'order': order,
-#         'total_amount': order.order_total_amount,
-#         'customer': customer[0]
-#     }
-#     return render(request, 'staff/order_details.html', context)
 
 
 class ViewOrderDetails(DetailView):
@@ -279,10 +257,6 @@ def update_order_status(request, order_id):
         notification.save()
     messages.success(request, 'order status updated successfully.')
     return HttpResponseRedirect(reverse('cart:view_all_orders'))
-
-
-def completed_orders(request):
-    pass
 
 
 def change_order_status(request):

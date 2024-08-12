@@ -60,24 +60,6 @@ def profile(request):
     return render(request, 'user/profile.html', context)
 
 
-# def create_user(request):
-#     if request.method == 'POST':
-#         try:
-#             form = SignUpForm(request.POST)
-#             if form.is_valid():
-#                 user = form.save()
-#                 login(request, user)
-#                 messages.success(request, 'user created successfully and logged..')
-#                 return redirect('book:home')
-#         except Exception as e:
-#             print(f'Error in creating user {e}')
-#             messages.error(request, 'Error in creating user')
-#             return redirect('book:home')
-#     else:
-#         form = SignUpForm()
-#         return render(request, 'user/user_registration.html', {'form': form})
-
-
 def create_user(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
