@@ -25,7 +25,7 @@ class Order(models.Model):
     ]
 
     def __str__(self):
-        return f'Order {self.id} - {self.status}'
+        return f'Order {self.id} - {self.order_status}'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now=True)

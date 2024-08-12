@@ -3,10 +3,13 @@ from bookstore.models import StockLevel
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
+from django.db.models import Sum, F, ExpressionWrapper, IntegerField
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, reverse, redirect
+from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 from users.models import Notifications
 from users.models import UserProfile
 
@@ -72,29 +75,52 @@ def remove_from_cart(request, cart_id):
     return HttpResponseRedirect(reverse('cart:cart'))
 
 
-@login_required
-def view_cart(request):
-    cart_list = UserCart.objects.filter(user_id=request.user.id)
-    number_of_books = len(cart_list)
-    total_order_price = 0
-    discounted_price = 0
+# @login_required
+# # def view_cart(request):
+# #     cart_list = UserCart.objects.filter(user_id=request.user.id)
+# #     number_of_books = len(cart_list)
+# #     total_order_price = 0
+# #     discounted_price = 0
+# #
+# #     for item in cart_list:
+# #         book = get_object_or_404(Book, pk=item.book_id)
+# #         total_order_price = total_order_price + item.total_price_original
+# #         discounted_price = discounted_price + item.discounted_price
+# #
+# #     delivery_charges = calculate_discount(total_order_price, 97)
+# #     total_amount = round(float(discounted_price) + float(delivery_charges), 2)
+# #     context = {
+# #         'total_order_price': total_order_price,
+# #         'discount': round(float(total_order_price) - float(discounted_price), 2),
+# #         'delivery_charges': delivery_charges,
+# #         'total_amount': total_amount,
+# #         'number_of_books': number_of_books,
+# #         'cart_list': cart_list
+# #     }
+# #     return render(request, 'cart/cart.html', context)
 
-    for item in cart_list:
-        book = get_object_or_404(Book, pk=item.book_id)
-        total_order_price = total_order_price + item.total_price_original
-        discounted_price = discounted_price + item.discounted_price
+class ViewCart(TemplateView):
+    template_name = 'cart/cart.html'
 
-    delivery_charges = calculate_discount(total_order_price, 97)
-    total_amount = round(float(discounted_price) + float(delivery_charges), 2)
-    context = {
-        'total_order_price': total_order_price,
-        'discount': round(float(total_order_price) - float(discounted_price), 2),
-        'delivery_charges': delivery_charges,
-        'total_amount': total_amount,
-        'number_of_books': number_of_books,
-        'cart_list': cart_list
-    }
-    return render(request, 'cart/cart.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        cart_items = UserCart.objects.filter(user_id=user.id).select_related('book')
+        number_of_books = len(cart_items)
+        print(cart_items)
+        total_order_price = cart_items.aggregate(total_price=Sum('total_price_original'))['total_price'] or 0
+        discounted_price = cart_items.aggregate(discount=Sum('discounted_price'))['discount'] or 0
+        delivery_charges = calculate_discount(total_order_price, 97)
+        total_amount = round(float(discounted_price) + float(delivery_charges), 2)
+        context.update({
+            'total_order_price': total_order_price,
+            'discount': round(float(total_order_price) - float(discounted_price), 2),
+            'delivery_charges': delivery_charges,
+            'total_amount': total_amount,
+            'number_of_books': number_of_books,
+            'cart_list': cart_items
+        })
+        return context
 
 
 def increase_qty(request, cart_id):
@@ -183,31 +209,42 @@ def cancel_order(request, order_id):
     return redirect('users:profile')
 
 
-def view_order_details(request, order_details_id):
-    order = Order.objects.get(pk=order_details_id)
-    order_items_list = OrderItems.objects.filter(order_id=order_details_id)
-    order_details_list = []
-    for item in order_items_list:
-        order_info = {}
-        book = Book.objects.get(pk=item.book_id)
-        order_info['item_id'] = item.id
-        order_info['book_title'] = book.title
-        order_info['book_price'] = calculate_discount(book.price, book.discount)
-        order_info['quantity'] = item.quantity
-        order_info['total_price'] = order_info['book_price'] * item.quantity
-        order_details_list.append(order_info)
-    # get customer details
-    customer = User.objects.get(pk=order.user_id)
-    customer_profile = UserProfile.objects.get(user_id=order.user_id)
-    context = {
-        'order_details_list': order_details_list,
-        'order': order,
-        'total_amount': order.order_total_amount,
-        'customer': customer,
-        'customer_profile': customer_profile
-    }
+# def view_order_details(request, order_details_id):
+#     order = Order.objects.get(pk=order_details_id)
+#     order_details_list = OrderItems.objects.filter(order_id=order_details_id).select_related('book').all().annotate(
+#         total_price=F('book__price') * F('quantity'))
+#     customer = User.objects.filter(id=order.user_id).select_related('userprofile')
+#
+#     context = {
+#         'order_details_list': order_details_list,
+#         'order': order,
+#         'total_amount': order.order_total_amount,
+#         'customer': customer[0]
+#     }
+#     return render(request, 'staff/order_details.html', context)
 
-    return render(request, 'staff/order_details.html', context)
+
+class ViewOrderDetails(DetailView):
+    model = Order
+    template_name = 'staff/order_details.html'
+    context_object_name = 'order'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order = context['object']
+        context['order_details_list'] = OrderItems.objects.filter(order_id=order.id).select_related(
+            'book').all().annotate(
+            discounted_price=ExpressionWrapper(
+                F('book__price') * (1 - F('book__discount') / 100.0),
+                output_field=IntegerField()
+            ),
+            total_price=ExpressionWrapper(
+                F('discounted_price') * F('quantity'),
+                output_field=IntegerField()
+            )
+        )
+        context['customer'] = User.objects.filter(id=order.user_id).select_related('userprofile')[0]
+        return context
 
 
 @permission_required('cart.change_order', raise_exception=True)
@@ -256,7 +293,3 @@ def change_order_status(request):
 def completed_orders_list(request):
     orders_list = Order.objects.filter(order_status='delivered')
     return render(request, 'staff/completed_order_list.html', {'orders_list': orders_list})
-
-
-def sells_report(request):
-    pass

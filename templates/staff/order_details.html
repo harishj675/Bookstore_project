@@ -7,9 +7,9 @@
         <h2>Customer Information</h2>
         <p><strong>Name:</strong> {{ customer.first_name }} {{ customer.last_name }}</p>
         <p><strong>Email:</strong> {{ customer.email }}</p>
-        <p><strong>Mobile Number:</strong> {{ customer_profile.mobile_number }}</p>
-        <p><strong>Address:</strong> {{ customer_profile.address }}</p>
-        <p><strong>Pincode:</strong> {{ customer_profile.pincode }}</p>
+        <p><strong>Mobile Number:</strong> {{ customer.userprofile.mobile_number }}</p>
+        <p><strong>Address:</strong> {{ customer.userprofile.address }}</p>
+        <p><strong>Pincode:</strong> {{ customer.userprofile.pincode }}</p>
     </div>
 
     <div id="order_details_list">
@@ -27,9 +27,9 @@
             <tbody>
             {% for item in order_details_list %}
             <tr>
-                <td>{{ item.item_id }}</td>
-                <td>{{ item.book_title }}</td>
-                <td>₹{{ item.book_price }}</td>
+                <td>{{ item.id }}</td>
+                <td>{{ item.book.title }}</td>
+                <td>₹{{ item.discounted_price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>₹{{ item.total_price }}</td>
             </tr>
@@ -44,7 +44,7 @@
 
     <div id="order_summary">
         <h2>Order Summary</h2>
-        <p><strong>Total Amount:</strong> ₹{{ total_amount }}</p>
+        <p><strong>Total Amount:</strong> ₹{{ order.order_total_amount }}</p>
         <p><strong>Order Status:</strong> {{ order.order_status }}</p>
     </div>
 

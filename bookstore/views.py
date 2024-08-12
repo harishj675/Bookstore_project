@@ -9,28 +9,42 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import reverse, redirect
 from django.utils.translation import activate
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from users.models import UserProfile, Notifications, User
 
 from .forms import BookAddForm, BookAddMoreInfo
 from .models import Book, BookSpecifications, StockLevel, Rating
 
 
-def index(request):
-    try:
-        book_list = Book.objects.annotate(
-            discounted_price=ExpressionWrapper(
-                F('price') * (1 - F('discount') * 0.01),
-                output_field=FloatField()
-            )
-        )
-        context = {
-            'book_list': book_list
-        }
-        return render(request, 'bookstore/home.html', context)
+# def index(request):
+#     try:
+#         book_list = Book.objects.annotate(
+#             discounted_price=ExpressionWrapper(
+#                 F('price') * (1 - F('discount') * 0.01),
+#                 output_field=FloatField()
+#             )
+#         )
+#         context = {
+#             'book_list': book_list
+#         }
+#         return render(request, 'bookstore/home.html', context)
+#
+#     except Exception as e:
+#         print('error in ----', e)
+#         return HttpResponse(f'An error occurred: {e}')
 
-    except Exception as e:
-        print('error in ----', e)
-        return HttpResponse(f'An error occurred: {e}')
+
+class IndexView(ListView):
+    model = Book
+    template_name = 'bookstore/home.html'
+    context_object_name = 'book_list'
+    queryset = Book.objects.annotate(
+        discounted_price=ExpressionWrapper(
+            F('price') * (1 - F('discount') * 0.01),
+            output_field=FloatField()
+        )
+    )
 
 
 def book_search(request):
@@ -57,8 +71,6 @@ def book_search(request):
 
 @login_required
 def book_review(request, book_id):
-    print(request.method)
-    print(request.POST)
     if request.method == 'POST':
         print('book_review method called.')
         try:
@@ -101,32 +113,49 @@ def view_review_details(request):
     return render(request, 'staff/review_details.html', {'review_list': ratings_info})
 
 
-def book_details(request, book_id):
-    try:
-        book = get_object_or_404(Book, pk=book_id)
-        rating_list = Rating.objects.filter(book_id=book_id, is_published=True)
+# def book_details(request, book_id):
+#     try:
+#         book = get_object_or_404(Book, pk=book_id)
+#         rating_list = Rating.objects.filter(book_id=book_id, is_published=True)
+#
+#         try:
+#             similar_book_list = Book.objects.exclude(id=book_id).annotate(
+#                 discounted_price=ExpressionWrapper(
+#                     F('price') * (1 - F('discount') * 0.01),
+#                     output_field=FloatField()
+#                 ))
+#             book_specifications = BookSpecifications.objects.get(book_id=book_id)
+#         except BookSpecifications.DoesNotExist:
+#             book_specifications = None
+#
+#         context = {
+#             'book': book,
+#             'book_specifications': book_specifications,
+#             'similar_book_list': similar_book_list[:3],
+#             'ratings_list': rating_list
+#         }
+#         return render(request, 'bookstore/detail.html', context)
+#
+#     except Exception as e:
+#         return HttpResponse(f'An error occurred: {e}', status=500)
 
-        try:
-            # similar_book_list = Book.objects.exclude(id=book_id)
-            similar_book_list = Book.objects.exclude(id=book_id).annotate(
-                discounted_price=ExpressionWrapper(
-                    F('price') * (1 - F('discount') * 0.01),
-                    output_field=FloatField()
-                ))
-            book_specifications = BookSpecifications.objects.get(book_id=book_id)
-        except BookSpecifications.DoesNotExist:
-            book_specifications = None
 
-        context = {
-            'book': book,
-            'book_specifications': book_specifications,
-            'similar_book_list': similar_book_list[:3],
-            'ratings_list': rating_list
-        }
-        return render(request, 'bookstore/detail.html', context)
+class BookDetailsView(DetailView):
+    model = Book
+    template_name = 'bookstore/detail.html'
+    context_object_name = 'book'
 
-    except Exception as e:
-        return HttpResponse(f'An error occurred: {e}', status=500)
+    def get_context_data(self, **kwargs):
+        book_id = kwargs.get('object').id
+        context = super().get_context_data(**kwargs)
+        context['similar_book_list'] = Book.objects.exclude(id=book_id).annotate(
+            discounted_price=ExpressionWrapper(
+                F('price') * (1 - F('discount') * 0.01),
+                output_field=FloatField()
+            ))
+        context['book_specifications'] = BookSpecifications.objects.get(book_id=book_id)
+        context['ratings_list'] = Rating.objects.filter(book_id=book_id, is_published=True)
+        return context
 
 
 def book_categories(request, book_categories):
@@ -277,9 +306,14 @@ def book_update(request, book_id):
         return render(request, 'bookstore/update_book.html', {'form': form, 'book_id': book_id})
 
 
-def view_book(request):
-    book_list = Book.objects.all()
-    return render(request, 'staff/view_books.html', {'book_list': book_list})
+# def view_book(request):
+#     book_list = Book.objects.all()
+#     return render(request, 'staff/view_books.html', {'book_list': book_list})
+
+class ViewBook(ListView):
+    model = Book
+    context_object_name = 'book_list'
+    template_name = 'staff/view_books.html'
 
 
 def view_stock(request):
@@ -298,16 +332,13 @@ def view_stock(request):
             book['update'] = stock.updated_at
         book_list.append(book)
 
-    print(book_list)
     return render(request, 'staff/view_stocks.html', {'book_list': book_list})
 
 
 @permission_required('bookstore.change_stocklevel', raise_exception=True)
 def add_stock(request):
-    print('add stock request callled.....')
     if request.method == 'POST':
         data = json.loads(request.body)
-        print(data)
         new_stock_quantity = int(data['stock_quantity'])
         book_id = int(data['book_id'])
         stock = StockLevel.objects.get(book_id=book_id)
