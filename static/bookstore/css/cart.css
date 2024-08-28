@@ -231,3 +231,34 @@
     color: #28a745;
     font-weight: bold;
 }
+
+#no-cart-items {
+    text-align: center;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+#no-cart-items h2 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+#no-cart-items a {
+    display: inline-block;
+    background: #007bff;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+#no-cart-items a:hover {
+    background: #0056b3;
+}
+

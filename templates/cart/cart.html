@@ -5,6 +5,7 @@
 
 <div id="cart-container">
     <div id="cart-items">
+        {% if cart_list%}
         {% for item in cart_list %}
         <div class="cart-item">
             <div class="cart-item-image">
@@ -31,6 +32,12 @@
                 REMOVE</a>
         </div>
         {% endfor %}
+        {% else %}
+        <div id="no-cart-items">
+            <h2>No items in cart..</h2>
+            <a href="{% url 'book:home' %} ">view books</a>
+        </div>
+        {% endif %}
     </div>
     {% if cart_count > 0 %}
     <div id="cart-order-summary">
@@ -58,6 +65,7 @@
     </div>
     <a href="{% url 'cart:create_order' %}" id="cart-place-order-btn">Place Order</a>
     {% endif %}
+
 </div>
 
 {% endblock %}
