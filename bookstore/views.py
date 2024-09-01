@@ -57,10 +57,7 @@ def book_search(request):
 
 @login_required
 def book_review(request, book_id):
-    print(request.method)
-    print(request.POST)
     if request.method == 'POST':
-        print('book_review method called.')
         try:
             title = request.POST['review-title']
             review_content = request.POST['review-content']
@@ -71,8 +68,6 @@ def book_review(request, book_id):
                 book=book,
                 user=request.user,
             )
-            print("created review details....")
-            print(review)
             review.save()
             # creating notification for staff user to
             user_profile = UserProfile.objects.get(roll='Staff')
@@ -304,10 +299,8 @@ def view_stock(request):
 
 @permission_required('bookstore.change_stocklevel', raise_exception=True)
 def add_stock(request):
-    print('add stock request callled.....')
     if request.method == 'POST':
         data = json.loads(request.body)
-        print(data)
         new_stock_quantity = int(data['stock_quantity'])
         book_id = int(data['book_id'])
         stock = StockLevel.objects.get(book_id=book_id)

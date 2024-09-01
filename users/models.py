@@ -15,7 +15,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.first_name
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     roll = models.CharField(max_length=50, choices=ROLL_CHOICES, default='User')
     address = models.CharField(max_length=100, null=True, blank=True)
     mobile_number = models.CharField(null=True, blank=True)
