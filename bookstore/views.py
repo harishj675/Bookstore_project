@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.paginator import Paginator
 from django.db.models import F, ExpressionWrapper, FloatField
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -92,13 +93,22 @@ def book_review(request, book_id):
 
 
 def view_review_details(request):
-    rating = Rating.objects.filter(is_published=False)
-    ratings_info = Rating.objects.prefetch_related('book', 'user').values('book__title', 'book__author', 'review_title',
-                                                                          'review_text', 'is_published', 'id',
-                                                                          'user__first_name',
-                                                                          'user__last_name')
-    print(ratings_info)
-    return render(request, 'staff/review_details.html', {'review_list': ratings_info})
+    # Fetch reviews that are not published
+    ratings_queryset = Rating.objects.prefetch_related('book', 'user').all().values(
+        'book__title', 'book__author', 'review_title', 'review_text', 'is_published', 'id',
+        'user__first_name', 'user__last_name'
+    )
+
+    # Pagination
+    paginator = Paginator(ratings_queryset, 5)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'review_list': page_obj,
+    }
+
+    return render(request, 'staff/review_details.html', context)
 
 
 def book_details(request, book_id):
@@ -278,8 +288,12 @@ def book_update(request, book_id):
 
 
 def view_book(request):
-    book_list = Book.objects.all()
-    return render(request, 'staff/view_books.html', {'book_list': book_list})
+    books = Book.objects.all()
+    paginator = Paginator(books, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'staff/view_books.html', {'book_list': page_obj})
 
 
 def view_stock(request):
@@ -298,8 +312,11 @@ def view_stock(request):
             book['update'] = stock.updated_at
         book_list.append(book)
 
-    print(book_list)
-    return render(request, 'staff/view_stocks.html', {'book_list': book_list})
+    paginator = Paginator(book_list, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'staff/view_stocks.html', {'book_list': page_obj})
 
 
 @permission_required('bookstore.change_stocklevel', raise_exception=True)
@@ -340,8 +357,19 @@ def remove_stock(request):
 @login_required
 @permission_required('bookstore.delete_book', raise_exception=True)
 def remove_book_view(request):
-    book_list = Book.objects.all()
-    return render(request, 'staff/remove_book_view.html', {'book_list': book_list})
+    # Fetch all books
+    books_queryset = Book.objects.all()
+
+    # Pagination
+    paginator = Paginator(books_queryset, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'book_list': page_obj,
+    }
+
+    return render(request, 'staff/remove_book_view.html', context)
 
 
 @login_required
@@ -354,14 +382,17 @@ def apply_discount(request):
             book = Book.objects.get(pk=book_id)
             book.discount = new_discount
             book.save()
-            messages.success(request, f'Discount apply to the book{book.title}')
+            messages.success(request, f'Discount applied to the book {book.title}')
             return HttpResponseRedirect(reverse('book:apply_discount'))
         except Exception as e:
-            messages.error(requst, 'error in applying discount on book')
-
+            messages.error(request, 'Error in applying discount on book')
     else:
-        book_list = Book.objects.all()
-        return render(request, 'staff/apply_discount.html', {'book_list': book_list})
+        books_queryset = Book.objects.all()
+        paginator = Paginator(books_queryset, 10)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, 'staff/apply_discount.html', {'book_list': page_obj})
 
 
 def set_language(request):

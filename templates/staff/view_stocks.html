@@ -53,6 +53,25 @@
     </div>
 </div>
 
+<!-- Pagination controls -->
+<div class="pagination">
+    <span class="step-links">
+        {% if book_list.has_previous %}
+            <a href="?page=1" class="btn btn-update">&laquo; First</a>
+            <a href="?page={{ book_list.previous_page_number }}" class="btn btn-update">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ book_list.number }} of {{ book_list.paginator.num_pages }}.
+        </span>
+
+        {% if book_list.has_next %}
+            <a href="?page={{ book_list.next_page_number }}" class="btn btn-update">Next</a>
+            <a href="?page={{ book_list.paginator.num_pages }}" class="btn btn-update">Last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('stockModal');
@@ -62,10 +81,8 @@
 
         openButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                 bookId = e.target.getAttribute('data-book-id');
-                 console.log('inside target variable ==>' ,bookId)
+                bookId = e.target.getAttribute('data-book-id');
                 document.getElementById('bookId').value = bookId;
-
                 modal.style.display = 'block';
             });
         });
@@ -83,7 +100,7 @@
         document.getElementById('addStockBtn').addEventListener('click', () => {
             const quantity = document.getElementById('stockAmount').value;
             const url = `{% url 'book:add_stock' %}`;
-            console.log('book_id' ,bookId)
+
             fetch(url, {
                 method: 'POST',
                 headers: {
