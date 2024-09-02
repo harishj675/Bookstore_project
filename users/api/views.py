@@ -11,14 +11,6 @@ from .serializers import UserSerializers, CreateUserSerializers, NotificationSer
 from ..models import Notifications
 
 
-class CheckPoint(APIView):
-
-    def get(self, request):
-        return Response({
-            "message": "API hits right place"
-        }, status=200)
-
-
 class UserModelView(ModelViewSet):
     queryset = User.objects.all()
 
