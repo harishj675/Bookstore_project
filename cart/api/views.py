@@ -16,15 +16,6 @@ from ..models import Cart as UserCart, Order, OrderItems
 from ..views import calculate_discount
 
 
-class CheckCart(APIView):
-    def get(self, request):
-        return Response(
-            {
-                "message": "Cart API Endpoints working fine"
-            }
-        )
-
-
 class AddToCart(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -219,3 +210,23 @@ class ViewOrder(generics.ListAPIView):
 class ViewOrderDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        return Response({
+            "message": "Order updated successfully.",
+            "data": response.data
+        }, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({
+                "message": "Order deleted successfully."
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "message": "Failed to delete the order.",
+                "details": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
