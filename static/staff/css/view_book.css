@@ -65,3 +65,54 @@ table tr:hover {
 .btn-update:hover {
     background-color: #0056b3;
 }
+
+
+.filter-form {
+    margin-bottom: 20px;
+}
+
+.filter-form label {
+    font-size: 16px;
+    margin-right: 10px;
+
+}
+
+.form-select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-bottom:10px;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .step-links {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.pagination .step-links a {
+    text-decoration: none;
+    color: #007bff;
+    margin: 0 5px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .step-links a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .current {
+    margin: 0 10px;
+    font-weight: bold;
+}
+

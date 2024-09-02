@@ -3,6 +3,24 @@
 {% block content %}
 <div id="orders_view">
     <h1>Orders List</h1>
+
+    <!-- Filter form -->
+    <form method="GET" action="{% url 'cart:view_all_orders' %}" class="filter-form">
+        <label for="status">Filter by Status:</label>
+        <select id="status" name="status" class="form-select">
+            <option value="">All</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>Processing</option>
+            <option value="shipped" {% if status_filter == 'shipped' %}selected{% endif %}>Shipped</option>
+            <option value="delivered" {% if status_filter == 'delivered' %}selected{% endif %}>Delivered</option>
+            {% if user_profile.roll == 'Manager' %}
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            {% endif %}
+        </select>
+        <button type="submit" class="btn btn-update">Filter</button>
+    </form>
+
+    <!-- Orders table -->
     <table>
         <thead>
         <tr>
@@ -15,7 +33,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for order in orders_list %}
+        {% for order in orders %}
         <tr>
             <td>{{ order.id }}</td>
             <td>₹{{ order.order_total_amount }}</td>
@@ -23,7 +41,7 @@
             <td>{{ order.order_status }}</td>
             <td>{{ order.order_date|date:"M d, Y" }}</td>
             <td>
-                <a href="{% url 'cart:view_order_details' order.id %}" class="btn-view-details">View Details</a>
+                <a href="{% url 'cart:view_order_details' order.id %}" class="btn btn-view-details">View Details</a>
             </td>
         </tr>
         {% empty %}
@@ -33,6 +51,24 @@
         {% endfor %}
         </tbody>
     </table>
-</div>
 
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if orders.has_previous %}
+                <a href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-update">&laquo; First</a>
+                <a href="?page={{ orders.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-update">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ orders.number }} of {{ orders.paginator.num_pages }}.
+            </span>
+
+            {% if orders.has_next %}
+                <a href="?page={{ orders.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-update">Next</a>
+                <a href="?page={{ orders.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-update">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
 {% endblock %}

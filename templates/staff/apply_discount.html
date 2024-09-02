@@ -19,24 +19,43 @@
         <tr>
             <td>{{ book.id }}</td>
             <td>{{ book.title }}</td>
-            <td>{{ book.author}}</td>
+            <td>{{ book.author }}</td>
             <td>₹{{ book.price }}</td>
             <td>{{ book.discount }}%</td>
             <td>
                 <form method="POST" action="{% url 'book:apply_discount' %}">
                     {% csrf_token %}
-                    <input type="hidden" id="book_id" name="book_id" value="{{book.id}}">
-                    <input type="number" id="discount" name="discount" placeholder="discount">
+                    <input type="hidden" id="book_id" name="book_id" value="{{ book.id }}">
+                    <input type="number" id="discount" name="discount" placeholder="Discount">
                     <button type="submit" class="btn btn-update-status">Apply Discount</button>
                 </form>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">No Books available.</td>
+            <td colspan="6">No books available.</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
+
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if book_list.has_previous %}
+                <a href="?page=1" class="btn btn-update">&laquo; First</a>
+                <a href="?page={{ book_list.previous_page_number }}" class="btn btn-update">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ book_list.number }} of {{ book_list.paginator.num_pages }}.
+            </span>
+
+            {% if book_list.has_next %}
+                <a href="?page={{ book_list.next_page_number }}" class="btn btn-update">Next</a>
+                <a href="?page={{ book_list.paginator.num_pages }}" class="btn btn-update">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 </div>
 {% endblock %}

@@ -3,6 +3,7 @@ from bookstore.models import StockLevel
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -167,12 +168,26 @@ def create_order(request):
 
 def view_orders(request):
     user_profile = UserProfile.objects.get(user_id=request.user.id)
+    status_filter = request.GET.get('status', '')
+
     if user_profile.roll == 'Staff':
-        orders_list = Order.objects.filter(order_status='Pending')
-        return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+        orders_queryset = Order.objects.filter(order_status='Pending')
     else:
-        orders_list = Order.objects.all()
-        return render(request, 'staff/view_orders.html', {'orders_list': orders_list})
+        if status_filter:
+            orders_queryset = Order.objects.filter(order_status=status_filter)
+        else:
+            orders_queryset = Order.objects.all()
+
+    paginator = Paginator(orders_queryset, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'orders': page_obj,
+        'status_filter': status_filter
+    }
+
+    return render(request, 'staff/view_orders.html', context)
 
 
 def cancel_order(request, order_id):
@@ -249,8 +264,12 @@ def completed_orders(request):
 
 
 def change_order_status(request):
-    orders_list = Order.objects.exclude(order_status__in=['Pending', 'Cancelled', 'Shipped', 'delivered'])
-    return render(request, 'staff/change_order_status.html', {'orders_list': orders_list})
+    orders = Order.objects.exclude(order_status__in=['Pending', 'Cancelled', 'Shipped', 'Delivered'])
+    paginator = Paginator(orders, 8)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'staff/change_order_status.html', {'orders_list': page_obj})
 
 
 def completed_orders_list(request):

@@ -1,6 +1,7 @@
 from django.db.models import F, ExpressionWrapper, FloatField, Q
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, generics, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -24,13 +25,26 @@ class BookListViewSet(viewsets.ModelViewSet):
 
 
 class SearchBook(APIView):
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='query',
+                type=OpenApiTypes.STR,
+                description='Search for a book by title or author',
+                required=True,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+        responses={200: 'BookSerializers'},
+    )
     def get(self, request):
-        query = request.GET['query']
+        query = request.GET.get('query', '')
         query_to_execute = Q(title__icontains=query) | Q(author__icontains=query)
         book_list = Book.objects.filter(query_to_execute).distinct()
         serializer = BookSerializers(book_list, many=True)
         return Response({
-            'message': "query fetch book successfully",
+            'message': "Query fetched book(s) successfully",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -88,7 +102,7 @@ class BookReviewDetails(generics.RetrieveUpdateDestroyAPIView):
             self.perform_destroy(instance)
             return Response({
                 "message": "Book review deleted successfully."
-            }, status=status.HTTP_204_NO_CONTENT)
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({
                 "message": "Failed to delete the book review.",
@@ -135,26 +149,6 @@ class CreateBook(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-# class BookDetails(generics.RetrieveUpdateDestroyAPIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     queryset = Book.objects.all()
-#     serializer_class = BookSerializers
-#
-#     def destroy(self, request, *args, **kwargs):
-#         book = self.get_object()
-#         self.perform_destroy(book)
-#         return Response({
-#             "message": "Book deleted successfully!",
-#             "book_id": book.id,
-#             "title": book.title,
-#             "author": book.author,
-#         }, status=status.HTTP_200_OK)
-#
-#     def perform_destroy(self, book):
-#         book.delete()
-
-
 class StockLevelList(generics.ListCreateAPIView):
     queryset = StockLevel.objects.all()
     serializer_class = StockSerializer
@@ -189,6 +183,10 @@ class AddStock(APIView):
 
 
 class RemoveStock(APIView):
+    @extend_schema(
+        request=AddStockSerializer,
+        responses={200: AddStockSerializer}
+    )
     def post(self, request, *args, **kwargs):
         data = request.data
         new_stock_quantity = int(data.get('stock_quantity', 0))

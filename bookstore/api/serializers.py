@@ -3,6 +3,12 @@ from rest_framework import serializers
 from ..models import Book, BookSpecifications, Rating, StockLevel
 
 
+class BookViewAsChild(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'author', 'price', ]
+
+
 class BookListSerializers(serializers.ModelSerializer):
     discounted_price = serializers.IntegerField()
 
@@ -18,6 +24,8 @@ class BookSerializers(serializers.ModelSerializer):
 
 
 class BookSpecificationsSerializers(serializers.ModelSerializer):
+    book = BookViewAsChild()
+
     class Meta:
         model = BookSpecifications
         fields = '__all__'
@@ -30,6 +38,8 @@ class BookReviewSerializers(serializers.ModelSerializer):
 
 
 class BookReviewViewSerializers(serializers.ModelSerializer):
+    book = BookViewAsChild()
+
     class Meta:
         model = Rating
         fields = '__all__'
