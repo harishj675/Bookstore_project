@@ -1,0 +1,1578 @@
+openapi: 3.0.3
+info:
+  title: Book Store API
+  version: 1.0.0
+  description: API documentation for the Book Store project
+paths:
+  /api/bookstore/book-add-stock/:
+    post:
+      operationId: bookstore_book_add_stock_create
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddStock'
+          description: ''
+  /api/bookstore/book-remove-stock/:
+    post:
+      operationId: bookstore_book_remove_stock_create
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddStockRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddStock'
+          description: ''
+  /api/bookstore/book-review/:
+    post:
+      operationId: bookstore_book_review_create
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookReviewSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookReviewSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookReviewSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookReviewSerializers'
+          description: ''
+  /api/bookstore/book-review/{id}/:
+    get:
+      operationId: bookstore_book_review_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookReviewViewSerializers'
+          description: ''
+    put:
+      operationId: bookstore_book_review_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookReviewViewSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookReviewViewSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookReviewViewSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookReviewViewSerializers'
+          description: ''
+    patch:
+      operationId: bookstore_book_review_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBookReviewViewSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBookReviewViewSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBookReviewViewSerializersRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookReviewViewSerializers'
+          description: ''
+    delete:
+      operationId: bookstore_book_review_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/bookstore/book-specifications/{book_id}/:
+    get:
+      operationId: bookstore_book_specifications_list
+      parameters:
+      - in: path
+        name: book_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookSpecificationsSerializers'
+          description: ''
+  /api/bookstore/book-stock-levels/:
+    get:
+      operationId: bookstore_book_stock_levels_list
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stock'
+          description: ''
+  /api/bookstore/books/:
+    get:
+      operationId: bookstore_books_list
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookListSerializers'
+          description: ''
+    post:
+      operationId: bookstore_books_create
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreateSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookCreateSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookCreateSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookCreateSerializers'
+          description: ''
+  /api/bookstore/books/{id}/:
+    get:
+      operationId: bookstore_books_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookListSerializers'
+          description: ''
+    put:
+      operationId: bookstore_books_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookListSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookListSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookListSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookListSerializers'
+          description: ''
+    patch:
+      operationId: bookstore_books_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - bookstore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBookListSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBookListSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBookListSerializersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookListSerializers'
+          description: ''
+    delete:
+      operationId: bookstore_books_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/bookstore/search/:
+    get:
+      operationId: bookstore_search_retrieve
+      parameters:
+      - in: query
+        name: query
+        schema:
+          type: string
+        description: Search for a book by title or author
+        required: true
+      tags:
+      - bookstore
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/cart/add/{id}/:
+    get:
+      operationId: cart_add_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/cart/create-order/:
+    post:
+      operationId: cart_create_order_create
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/cart/decrease-qty/{cart_id}/:
+    get:
+      operationId: cart_decrease_qty_retrieve
+      parameters:
+      - in: path
+        name: cart_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/cart/increase-qty/{cart_id}/:
+    get:
+      operationId: cart_increase_qty_retrieve
+      parameters:
+      - in: path
+        name: cart_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/cart/order-details/{id}/:
+    get:
+      operationId: cart_order_details_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: cart_order_details_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    patch:
+      operationId: cart_order_details_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    delete:
+      operationId: cart_order_details_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/cart/remove/{cart_id}/:
+    get:
+      operationId: cart_remove_retrieve
+      parameters:
+      - in: path
+        name: cart_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/cart/view/:
+    get:
+      operationId: cart_view_list
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartView'
+          description: ''
+  /api/cart/view-order/:
+    get:
+      operationId: cart_view_order_list
+      tags:
+      - cart
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+  /api/users/login/:
+    post:
+      operationId: users_login_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+  /api/users/notifications/:
+    get:
+      operationId: users_notifications_list
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/users/notifications/mark-as-read/{notification_id}/:
+    patch:
+      operationId: users_notifications_mark_as_read_partial_update
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/users/user/:
+    get:
+      operationId: users_user_list
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSerializers'
+          description: ''
+    post:
+      operationId: users_user_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUserSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUserSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserSerializers'
+          description: ''
+  /api/users/user/{id}/:
+    get:
+      operationId: users_user_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSerializers'
+          description: ''
+    put:
+      operationId: users_user_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserSerializersRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSerializers'
+          description: ''
+    patch:
+      operationId: users_user_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSerializersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSerializersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSerializersRequest'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSerializers'
+          description: ''
+    delete:
+      operationId: users_user_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    AddStock:
+      type: object
+      properties:
+        book_id:
+          type: integer
+        stock_quantity:
+          type: integer
+      required:
+      - book_id
+      - stock_quantity
+    AddStockRequest:
+      type: object
+      properties:
+        book_id:
+          type: integer
+        stock_quantity:
+          type: integer
+      required:
+      - book_id
+      - stock_quantity
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+          readOnly: true
+      required:
+      - token
+    AuthTokenRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    BookCreateSerializers:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        genre:
+          type: string
+        cover_img:
+          type: string
+          format: uri
+      required:
+      - author
+      - genre
+      - price
+      - quantity
+      - title
+    BookCreateSerializersRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        genre:
+          type: string
+          minLength: 1
+        cover_img:
+          type: string
+          format: binary
+      required:
+      - author
+      - genre
+      - price
+      - quantity
+      - title
+    BookListSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        genre:
+          type: string
+        cover_img:
+          type: string
+          format: uri
+          nullable: true
+        discounted_price:
+          type: integer
+      required:
+      - author
+      - discounted_price
+      - genre
+      - id
+      - price
+      - quantity
+      - title
+    BookListSerializersRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        genre:
+          type: string
+          minLength: 1
+        cover_img:
+          type: string
+          format: binary
+          nullable: true
+        discounted_price:
+          type: integer
+      required:
+      - author
+      - discounted_price
+      - genre
+      - price
+      - quantity
+      - title
+    BookReviewSerializers:
+      type: object
+      properties:
+        book:
+          type: integer
+        review_title:
+          type: string
+        review_text:
+          type: string
+      required:
+      - book
+      - review_text
+      - review_title
+    BookReviewSerializersRequest:
+      type: object
+      properties:
+        book:
+          type: integer
+        review_title:
+          type: string
+          minLength: 1
+        review_text:
+          type: string
+          minLength: 1
+      required:
+      - book
+      - review_text
+      - review_title
+    BookReviewViewSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        review_title:
+          type: string
+        review_text:
+          type: string
+        is_published:
+          type: boolean
+          nullable: true
+        book:
+          type: integer
+        user:
+          type: integer
+      required:
+      - book
+      - id
+      - review_text
+      - review_title
+      - user
+    BookReviewViewSerializersRequest:
+      type: object
+      properties:
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        review_title:
+          type: string
+          minLength: 1
+        review_text:
+          type: string
+          minLength: 1
+        is_published:
+          type: boolean
+          nullable: true
+        book:
+          type: integer
+        user:
+          type: integer
+      required:
+      - book
+      - review_text
+      - review_title
+      - user
+    BookSpecificationsSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        book:
+          $ref: '#/components/schemas/BookViewAsChild'
+        book_description:
+          type: string
+          nullable: true
+        book_ISBN_13:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        book_language:
+          type: string
+          nullable: true
+          maxLength: 50
+        book_binding:
+          type: string
+          nullable: true
+          maxLength: 50
+        book_publisher:
+          type: string
+          maxLength: 200
+        book_total_pages:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        book_tag:
+          type: string
+          nullable: true
+          maxLength: 10
+      required:
+      - book
+      - id
+    BookView:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - author
+      - price
+      - title
+    BookViewAsChild:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - author
+      - id
+      - price
+      - title
+    CartView:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        book:
+          $ref: '#/components/schemas/BookView'
+        user:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        total_price_original:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        discounted_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - book
+      - discounted_price
+      - id
+      - total_price_original
+      - user
+    CreateUserSerializers:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - password
+      - username
+    CreateUserSerializersRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - password
+      - username
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        is_read:
+          type: string
+          format: uri
+          maxLength: 200
+      required:
+      - id
+      - message
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        numbers_of_items:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        order_status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+      required:
+      - id
+      - items
+      - order_total_amount
+    OrderItem:
+      type: object
+      properties:
+        book:
+          type: integer
+        book_title:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - book
+      - book_title
+      - quantity
+    OrderItemRequest:
+      type: object
+      properties:
+        book:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - book
+      - quantity
+    OrderRequest:
+      type: object
+      properties:
+        order_total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        numbers_of_items:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+        order_status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+      required:
+      - items
+      - order_total_amount
+    OrderStatusEnum:
+      enum:
+      - Pending
+      - Processing
+      - Completed
+      - Cancelled
+      type: string
+      description: |-
+        * `Pending` - Pending
+        * `Processing` - Processing
+        * `Completed` - Completed
+        * `Cancelled` - Cancelled
+    PatchedBookListSerializersRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        genre:
+          type: string
+          minLength: 1
+        cover_img:
+          type: string
+          format: binary
+          nullable: true
+        discounted_price:
+          type: integer
+    PatchedBookReviewViewSerializersRequest:
+      type: object
+      properties:
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        review_title:
+          type: string
+          minLength: 1
+        review_text:
+          type: string
+          minLength: 1
+        is_published:
+          type: boolean
+          nullable: true
+        book:
+          type: integer
+        user:
+          type: integer
+    PatchedOrderRequest:
+      type: object
+      properties:
+        order_total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        numbers_of_items:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+        order_status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+    PatchedUserSerializersRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        profile:
+          $ref: '#/components/schemas/UserProfileRequest'
+    RollEnum:
+      enum:
+      - User
+      - Staff
+      - Manager
+      type: string
+      description: |-
+        * `User` - User
+        * `Staff` - Staff
+        * `Manager` - Manager
+    Stock:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        stock_quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        remaining_quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        sell_quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        book:
+          type: integer
+      required:
+      - book
+      - id
+      - stock_quantity
+      - updated_at
+    UserProfile:
+      type: object
+      properties:
+        roll:
+          $ref: '#/components/schemas/RollEnum'
+        address:
+          type: string
+          nullable: true
+          maxLength: 100
+        mobile_number:
+          type: string
+          nullable: true
+        pincode:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+    UserProfileRequest:
+      type: object
+      properties:
+        roll:
+          $ref: '#/components/schemas/RollEnum'
+        address:
+          type: string
+          nullable: true
+          maxLength: 100
+        mobile_number:
+          type: string
+          nullable: true
+        pincode:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+    UserSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+      required:
+      - id
+      - profile
+      - username
+    UserSerializersRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        profile:
+          $ref: '#/components/schemas/UserProfileRequest'
+      required:
+      - profile
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

@@ -4,11 +4,13 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, generics, status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from users.models import UserProfile, Notifications
 
+from users.models import UserProfile, Notifications
+from users.permissions import IsStaffOrReadOnly, IsStaffUser
 from .serializers import BookListSerializers, BookSerializers, BookSpecificationsSerializers, BookReviewSerializers, \
     BookReviewViewSerializers, BookCreateSerializers, StockSerializer, AddStockSerializer
 from ..models import Book, BookSpecifications, Rating, StockLevel
@@ -21,7 +23,40 @@ class BookListViewSet(viewsets.ModelViewSet):
             output_field=FloatField()
         )
     )
-    serializer_class = BookListSerializers
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return BookCreateSerializers
+        return BookListSerializers
+
+    def perform_create(self, serializer):
+        book = serializer.save()
+        stock_leval = StockLevel.objects.create(
+            book=book,
+            stock_quantity=book.quantity,
+            remaining_quantity=book.quantity,
+        )
+        stock_leval.save()
+        return Response({
+            'message': "Book Added successfully.",
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
+
+    def create(self, request, *args, **kwargs):
+        file_uploaded = request.FILES.get('cover_img')
+        if file_uploaded:
+            request.data['cover_img'] = file_uploaded
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response({
+            'message': "Book Added successfully.",
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
 
 
 class SearchBook(APIView):
@@ -91,7 +126,7 @@ class BookReview(generics.CreateAPIView):
 
 class BookReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffUser]
 
     queryset = Rating.objects.all()
     serializer_class = BookReviewViewSerializers
@@ -112,6 +147,7 @@ class BookReviewDetails(generics.RetrieveUpdateDestroyAPIView):
 
 class BookSpecificationsListView(generics.ListAPIView):
     serializer_class = BookSpecificationsSerializers
+    permission_class = [IsStaffOrReadOnly]
 
     def get_queryset(self):
         book_id = self.kwargs.get('book_id')
@@ -149,14 +185,16 @@ class CreateBook(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class StockLevelList(generics.ListCreateAPIView):
+class StockLevelList(generics.ListAPIView):
     queryset = StockLevel.objects.all()
     serializer_class = StockSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsStaffUser]
 
 
 class AddStock(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffUser]
 
     @extend_schema(
         request=AddStockSerializer,
@@ -183,6 +221,9 @@ class AddStock(APIView):
 
 
 class RemoveStock(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsStaffUser]
+
     @extend_schema(
         request=AddStockSerializer,
         responses={200: AddStockSerializer}

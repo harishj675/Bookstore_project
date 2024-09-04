@@ -38,8 +38,6 @@ class BookReviewSerializers(serializers.ModelSerializer):
 
 
 class BookReviewViewSerializers(serializers.ModelSerializer):
-    book = BookViewAsChild()
-
     class Meta:
         model = Rating
         fields = '__all__'
