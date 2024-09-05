@@ -60,3 +60,13 @@ class StockSerializer(serializers.ModelSerializer):
 class AddStockSerializer(serializers.Serializer):
     book_id = serializers.IntegerField()
     stock_quantity = serializers.IntegerField()
+    ACTION_CHOICES = [
+        ('add', 'Add'),
+        ('remove', 'Remove'),
+    ]
+    action = serializers.ChoiceField(choices=ACTION_CHOICES)
+
+    def validate(self, data):
+        if data['action'] == 'remove' and data['stock_quantity'] < 0:
+            raise serializers.ValidationError("Stock quantity cannot be negative when removing stock.")
+        return data

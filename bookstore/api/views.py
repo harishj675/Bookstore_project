@@ -8,9 +8,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from users.models import UserProfile, Notifications
 from users.permissions import IsStaffOrReadOnly, IsStaffUser
+
 from .serializers import BookListSerializers, BookSerializers, BookSpecificationsSerializers, BookReviewSerializers, \
     BookReviewViewSerializers, BookCreateSerializers, StockSerializer, AddStockSerializer
 from ..models import Book, BookSpecifications, Rating, StockLevel
@@ -164,84 +164,46 @@ class BookSpecificationsListView(generics.ListAPIView):
         return Response({"message": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CreateBook(generics.CreateAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Book.objects.all()
-    serializer_class = BookCreateSerializers
-
-    def perform_create(self, serializer):
-        book = serializer.save()
-        stock_leval = StockLevel.objects.create(
-            book=book,
-            stock_quantity=book.quantity,
-            remaining_quantity=book.quantity,
-        )
-        stock_leval.save()
-
-        return Response({
-            'message': "Book Added successfully..",
-            'data': serializer.data
-        }, status=status.HTTP_201_CREATED)
-
-
 class StockLevelList(generics.ListAPIView):
     queryset = StockLevel.objects.all()
     serializer_class = StockSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsStaffUser]
-
-
-class AddStock(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsStaffUser]
 
-    @extend_schema(
-        request=AddStockSerializer,
-        responses={200: AddStockSerializer}
-    )
-    def post(self, request, *args, **kwargs):
-        serializer = AddStockSerializer(data=request.data)
 
+class AddRemoveStock(generics.CreateAPIView):
+    serializer_class = AddStockSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def create(self, request, *args, **kwargs):
+        serializer = AddStockSerializer(data=request.data)
         if serializer.is_valid():
             book_id = serializer.validated_data['book_id']
-            new_stock_quantity = serializer.validated_data['stock_quantity']
+            quantity = serializer.validated_data['stock_quantity']
+            action = serializer.validated_data['action']
 
-            # Retrieve the stock object for the given book_id
             stock = get_object_or_404(StockLevel, book_id=book_id)
 
-            # Update the stock quantities
-            stock.stock_quantity += new_stock_quantity
-            stock.remaining_quantity += new_stock_quantity
+            if action == 'remove' and stock.remaining_quantity < quantity:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Not enough stock to remove the specified quantity.'"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if action == 'add':
+                stock.stock_quantity = stock.stock_quantity + quantity
+                stock.remaining_quantity = stock.remaining_quantity + quantity
+            else:
+                stock.stock_quantity = stock.stock_quantity - quantity
+                stock.remaining_quantity = stock.remaining_quantity - quantity
+
             stock.save()
 
-            return Response({'success': True}, status=status.HTTP_200_OK)
+            return Response({"success": True}, status=status.HTTP_200_OK)
+
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class RemoveStock(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsStaffUser]
-
-    @extend_schema(
-        request=AddStockSerializer,
-        responses={200: AddStockSerializer}
-    )
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        new_stock_quantity = int(data.get('stock_quantity', 0))
-        book_id = int(data.get('book_id', 0))
-
-        stock = get_object_or_404(StockLevel, book_id=book_id)
-
-        if stock.stock_quantity >= new_stock_quantity:
-            stock.stock_quantity -= new_stock_quantity
-            stock.remaining_quantity -= new_stock_quantity
-            stock.save()
-            return Response({'success': True}, status=status.HTTP_200_OK)
-        else:
-            return Response({
-                'success': False,
-                'error': 'Not enough stock to remove the specified quantity.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": f"Error {serializer.errors}"},
+                            status=status.HTTP_400_BAD_REQUEST)
