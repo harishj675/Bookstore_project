@@ -15,7 +15,7 @@ __pycache__/
 .env
 
 #virtual
-.venv/
+venv/
 
 
 media/
