@@ -2,18 +2,18 @@ from django.db.models import F, ExpressionWrapper, FloatField, Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets, generics, status
+from rest_framework import generics
+from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from users.models import UserProfile, Notifications
 from users.permissions import IsStaffOrReadOnly, IsStaffUser
 
-from .serializers import BookListSerializers, BookSerializers, BookSpecificationsSerializers, BookReviewSerializers, \
-    BookReviewViewSerializers, BookCreateSerializers, StockSerializer, AddStockSerializer
-from ..models import Book, BookSpecifications, Rating, StockLevel
+from .serializers import BookSerializers, BookCreateSerializers, StockSerializer, \
+    AddStockSerializer, StockLevelDisplaySerializer, BookReviewCreateSerializers, BookReviewDisplaySerializer ,BookListSerializers
+from ..models import Book, StockLevel, Rating
 
 
 class BookListViewSet(viewsets.ModelViewSet):
@@ -27,7 +27,7 @@ class BookListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsStaffOrReadOnly]
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.request.method in ['POST', 'PUT']:
             return BookCreateSerializers
         return BookListSerializers
 
@@ -84,10 +84,71 @@ class SearchBook(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class StockLevelViewSet(viewsets.ModelViewSet):
+    queryset = StockLevel.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsStaffUser]
+    parser_classes = (MultiPartParser, FormParser)
+
+    lookup_field = 'book_id'
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return AddStockSerializer
+        if self.request.method == 'GET':
+            return StockLevelDisplaySerializer
+        return StockSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        stock = get_object_or_404(StockLevel, book_id=kwargs.get('book_id'))
+
+        serializer = self.get_serializer(stock, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            quantity = serializer.validated_data['stock_quantity']
+            action = serializer.validated_data['action']
+
+            if action == 'remove' and stock.remaining_quantity < quantity:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Not enough stock to remove the specified quantity."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if action == 'add':
+                stock.stock_quantity += quantity
+                stock.remaining_quantity += quantity
+            else:
+                stock.stock_quantity -= quantity
+                stock.remaining_quantity -= quantity
+
+            stock.save()
+
+            return Response({"success": True}, status=status.HTTP_200_OK)
+
+        return Response(
+            {"success": False, "message": f"Error: {serializer.errors}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def get_queryset(self):
+        return StockLevel.objects.all()
+
+    http_method_names = ['get', 'patch']
+
+
 class BookReview(generics.CreateAPIView):
+    parser_classes = (MultiPartParser, FormParser)
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    serializer_class = BookReviewSerializers
+    serializer_class = BookReviewCreateSerializers
+
+    def get_serializer(self):
+        if self.request.method == 'POST':
+            return BookReviewCreateSerializers
+        return BookReviewDisplaySerializer
 
     def perform_create(self, serializer):
         try:
@@ -127,9 +188,10 @@ class BookReview(generics.CreateAPIView):
 class BookReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsStaffUser]
+    parser_classes = (MultiPartParser, FormParser)
 
     queryset = Rating.objects.all()
-    serializer_class = BookReviewViewSerializers
+    serializer_class = BookReviewDisplaySerializer
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -143,67 +205,3 @@ class BookReviewDetails(generics.RetrieveUpdateDestroyAPIView):
                 "message": "Failed to delete the book review.",
                 "details": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class BookSpecificationsListView(generics.ListAPIView):
-    serializer_class = BookSpecificationsSerializers
-    permission_class = [IsStaffOrReadOnly]
-
-    def get_queryset(self):
-        book_id = self.kwargs.get('book_id')
-        return BookSpecifications.objects.filter(book_id=book_id)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if queryset.exists():
-            serializer = self.get_serializer(queryset, many=True)
-            return Response({
-                "message": "BookSpecifications fetched successfully.",
-                "book_specifications": serializer.data
-            }, status=status.HTTP_200_OK)
-        return Response({"message": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-class StockLevelList(generics.ListAPIView):
-    queryset = StockLevel.objects.all()
-    serializer_class = StockSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsStaffUser]
-
-
-class AddRemoveStock(generics.CreateAPIView):
-    serializer_class = AddStockSerializer
-    parser_classes = (MultiPartParser, FormParser)
-
-    def create(self, request, *args, **kwargs):
-        serializer = AddStockSerializer(data=request.data)
-        if serializer.is_valid():
-            book_id = serializer.validated_data['book_id']
-            quantity = serializer.validated_data['stock_quantity']
-            action = serializer.validated_data['action']
-
-            stock = get_object_or_404(StockLevel, book_id=book_id)
-
-            if action == 'remove' and stock.remaining_quantity < quantity:
-                return Response(
-                    {
-                        "success": False,
-                        "message": "Not enough stock to remove the specified quantity.'"
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            if action == 'add':
-                stock.stock_quantity = stock.stock_quantity + quantity
-                stock.remaining_quantity = stock.remaining_quantity + quantity
-            else:
-                stock.stock_quantity = stock.stock_quantity - quantity
-                stock.remaining_quantity = stock.remaining_quantity - quantity
-
-            stock.save()
-
-            return Response({"success": True}, status=status.HTTP_200_OK)
-
-        else:
-            return Response({"success": False, "message": f"Error {serializer.errors}"},
-                            status=status.HTTP_400_BAD_REQUEST)

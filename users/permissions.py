@@ -53,3 +53,17 @@ class IsStaffUser(permissions.BasePermission):
     def has_permission(self, request, view):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         return user_profile.roll == 'Manager' or user_profile.roll == 'Staff'
+
+
+class BookReviewPermissions(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
+        if request.method in ['GET', 'POST']:
+            return True
+
+        if request.method in ['DELETE', 'PUT']:
+            return obj.user == request.user or user_profile.roll == "Staff" or user_profile.roll == "Manager"
+
+        if request.method == "PATCH":
+            return user_profile.roll == "Staff" or user_profile.roll == "Manager"
+        return False

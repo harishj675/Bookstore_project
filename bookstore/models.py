@@ -22,7 +22,7 @@ class BookSpecifications(models.Model):
     def __str__(self):
         return self.book_description
 
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book_specifications')
     book_description = models.TextField(null=True, blank=True)
     book_ISBN_13 = models.BigIntegerField(null=True, blank=True)
     book_language = models.CharField(max_length=50, null=True, blank=True)
@@ -33,7 +33,7 @@ class BookSpecifications(models.Model):
 
 
 class StockLevel(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='stock_level')
     stock_quantity = models.PositiveIntegerField()
     remaining_quantity = models.IntegerField(default=0)
     sell_quantity = models.IntegerField(default=0)
@@ -44,7 +44,7 @@ class StockLevel(models.Model):
 
 
 class Rating(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='review')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.DecimalField(null=True, blank=True, default=3, max_digits=10, decimal_places=2)
     review_title = models.CharField()

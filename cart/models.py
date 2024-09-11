@@ -12,8 +12,8 @@ class Cart(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    total_price_original = models.IntegerField()
-    discounted_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price_original = models.IntegerField(null=True, blank=True)
+    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
 
 class Order(models.Model):
@@ -29,7 +29,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now=True)
-    order_total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    order_total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     numbers_of_items = models.IntegerField(null=True, blank=True)
     order_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 

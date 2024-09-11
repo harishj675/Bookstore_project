@@ -35,3 +35,32 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'order_total_amount', 'numbers_of_items', 'items', 'order_status']
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id', 'order_total_amount', 'numbers_of_items', 'order_status']
+
+
+class AddToCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCart
+        fields = ['book', 'quantity']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        return UserCart.objects.create(user=user, **validated_data)
+
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+    order_status = serializers.ChoiceField(choices=Order.STATUS_CHOICES)
+
+    class Meta:
+        model = Order
+        fields = ['order_status']
+
+    def validate_order_status(self, value):
+        if value not in dict(Order.STATUS_CHOICES):
+            raise serializers.ValidationError("Invalid status. Choose a valid status from the list.")
+        return value
